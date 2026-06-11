@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 85%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 170 15% 45%;
+    --accent-foreground: 0 0% 100%;
+    --border: 0 0% 20%;
+    --input: 0 0% 18%;
+    --ring: 0 0% 40%;
+    --hero-subtitle: 210 17% 95%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background: hsl(var(--background));
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  html.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  html.lenis.lenis-stopped {
+    overflow: clip;
+  }
+
+  html.lenis.lenis-smooth iframe {
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply m-0 bg-background text-foreground antialiased;
+    font-family: Inter, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+
+  #root {
+    min-height: 100svh;
+    /* `overflow-x: hidden` can break sticky descendants; clip prevents sideways bleed without creating a scroll container. */
+    overflow-x: clip;
+    background: hsl(var(--background));
+  }
+}
+
+@layer components {
+  /* Keeps the sticky hero and its covering section in one stacking context. */
+  .sticky-hero-reveal {
+    isolation: isolate;
+  }
+
+  /* The hero occupies 100vh in normal flow, then sticks behind the next section. */
+  .sticky-hero {
+    transform: translateZ(0);
+  }
+
+  /* Higher z-index and solid background let this section physically cover the hero. */
+  .scroll-cover-section {
+    --cover-arc-offset: clamp(130px, 15vw, 220px);
+    isolation: isolate;
+    margin-top: var(--cover-arc-offset);
+    overflow: visible;
+  }
+
+  /* Oversized black ellipse creates the parabolic cover edge without border or shadow. */
+  .scroll-cover-section::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--cover-arc-offset) * -1);
+    left: 50%;
+    z-index: 0;
+    width: 155vw;
+    height: clamp(230px, 23vw, 360px);
+    transform: translateX(-50%);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    background: hsl(var(--background));
+    pointer-events: none;
+  }
+
+  .scroll-cover-section > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .circle-reveal {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .circle-reveal::before {
+    content: '';
+    position: absolute;
+    inset: 50%;
+    z-index: 0;
+    width: calc(100% + 8px);
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: hsl(var(--foreground));
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.32s ease-out;
+  }
+
+  .circle-reveal > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .circle-reveal:hover,
+  .group:hover .circle-reveal {
+    transform: scale(1.18);
+    border-color: transparent;
+    color: hsl(var(--background));
+  }
+
+  .circle-reveal:hover::before,
+  .group:hover .circle-reveal::before {
+    transform: translate(-50%, -50%) scale(1.45);
+  }
+
+  .work-grid:hover .work-card:not(:hover) {
+    filter: grayscale(30%) brightness(0.8);
+  }
+
+  @keyframes icon-shake {
+    0%,
+    100% {
+      transform: translateX(0) rotate(0deg);
+    }
+    25% {
+      transform: translateX(-1px) rotate(-8deg);
+    }
+    50% {
+      transform: translateX(1px) rotate(8deg);
+    }
+    75% {
+      transform: translateX(-1px) rotate(-5deg);
+    }
+  }
+
+  .social-button:hover .social-button-icon {
+    animation: icon-shake 0.34s ease-out;
+  }
+
+}
