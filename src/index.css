@@ -140,20 +140,26 @@
     z-index: 1;
   }
 
-  .circle-reveal:hover,
-  .group:hover .circle-reveal {
-    transform: scale(1.18);
-    border-color: transparent;
-    color: hsl(var(--background));
-  }
+  @media (hover: hover) and (pointer: fine) {
+    .circle-reveal:hover,
+    .group:hover .circle-reveal {
+      transform: scale(1.18);
+      border-color: transparent;
+      color: hsl(var(--background));
+    }
 
-  .circle-reveal:hover::before,
-  .group:hover .circle-reveal::before {
-    transform: translate(-50%, -50%) scale(1.45);
-  }
+    .pricing-button:hover {
+      transform: scale(1.02);
+    }
 
-  .work-grid:hover .work-card:not(:hover) {
-    filter: grayscale(30%) brightness(0.8);
+    .circle-reveal:hover::before,
+    .group:hover .circle-reveal::before {
+      transform: translate(-50%, -50%) scale(1.45);
+    }
+
+    .work-grid:hover .work-card:not(:hover) {
+      filter: grayscale(30%) brightness(0.8);
+    }
   }
 
   @keyframes icon-shake {
@@ -172,8 +178,10 @@
     }
   }
 
-  .social-button:hover .social-button-icon {
-    animation: icon-shake 0.34s ease-out;
+  @media (hover: hover) and (pointer: fine) {
+    .social-button:hover .social-button-icon {
+      animation: icon-shake 0.34s ease-out;
+    }
   }
 
 }
