@@ -1,4 +1,4 @@
-import { type FocusEvent, type MouseEvent, type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { type MouseEvent, type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
 import Lenis from 'lenis'
 import {
@@ -39,15 +39,15 @@ const playMutedVideo = (video: HTMLVideoElement) => {
 }
 
 const navLinks = [
-  { label: 'About', href: '#about' },
-  { label: 'Works', href: '#work' },
-  { label: 'Contact', href: '#contact-us' },
+  { label: 'About', href: '/about' },
+  { label: 'Works', href: '/works' },
+  { label: 'Contact', href: '/contact' },
 ]
 
 const mobileNavLinks = [
-  { label: 'WORKS', href: '#work' },
-  { label: 'ABOUT', href: '#about' },
-  { label: 'CONTACT', href: '#contact-us' },
+  { label: 'WORKS', href: '/works' },
+  { label: 'ABOUT', href: '/about' },
+  { label: 'CONTACT', href: '/contact' },
 ]
 
 const socialLinks = [
@@ -99,6 +99,41 @@ const workItems = [
     type: 'UX Engineering',
     image:
       'https://images.pexels.com/photos/8472482/pexels-photo-8472482.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  },
+]
+
+const workPills = [
+  {
+    title: 'SaaS Dashboard',
+    type: 'Web App',
+    image: workItems[0].image,
+    hoverImage:
+      'https://images.pexels.com/photos/3184298/pexels-photo-3184298.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    className: 'left-[3%] top-[4%] md:left-[5%] md:top-[5%]',
+  },
+  {
+    title: 'Commerce Redesign',
+    type: 'Ecommerce',
+    image: workItems[1].image,
+    hoverImage:
+      'https://images.pexels.com/photos/5632402/pexels-photo-5632402.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    className: 'right-[3%] top-[26%] md:right-[5%] md:top-[24%]',
+  },
+  {
+    title: 'Startup Launch',
+    type: 'Marketing Site',
+    image: workItems[2].image,
+    hoverImage:
+      'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    className: 'left-[4%] top-[52%] md:left-[9%] md:top-[50%]',
+  },
+  {
+    title: 'Product System',
+    type: 'UX Engineering',
+    image: workItems[3].image,
+    hoverImage:
+      'https://images.pexels.com/photos/6476589/pexels-photo-6476589.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    className: 'right-[3%] top-[78%] md:right-[7%] md:top-[75%]',
   },
 ]
 
@@ -216,20 +251,12 @@ function useIsDesktopBreakpoint() {
   return isDesktop
 }
 
-function Navbar() {
-  const [hoveredNav, setHoveredNav] = useState<string | null>(null)
+function Navbar({ isLightPage = false }: { isLightPage?: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMobileMenuExiting, setIsMobileMenuExiting] = useState(false)
-  const [shouldPlaceNavPill, setShouldPlaceNavPill] = useState(true)
-  const [navPill, setNavPill] = useState({
-    height: 0,
-    left: 0,
-    opacity: 0,
-    top: 0,
-    width: 0,
-  })
-  const isNavPillActive = useRef(false)
+  const [isOverDarkSection, setIsOverDarkSection] = useState(false)
   const isMobileMenuVisible = isMobileMenuOpen || isMobileMenuExiting
+  const useLightNav = isLightPage && !isOverDarkSection
 
   const openMobileMenu = useCallback(() => {
     setIsMobileMenuExiting(false)
@@ -247,6 +274,12 @@ function Navbar() {
   const scrollHome = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
     closeMobileMenu()
+
+    if (window.location.pathname !== '/') {
+      window.location.href = '/'
+      return
+    }
+
     window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
 
     if (smoothScrollInstance) {
@@ -315,82 +348,68 @@ function Navbar() {
     }
   }, [isMobileMenuVisible])
 
-  const moveNavPill = (label: string, event: FocusEvent<HTMLElement> | MouseEvent<HTMLElement>) => {
-    const item = event.currentTarget
-    const shouldPlaceInstantly = !isNavPillActive.current
+  useEffect(() => {
+    if (!isLightPage) {
+      setIsOverDarkSection(false)
+      return undefined
+    }
 
-    isNavPillActive.current = true
-    setHoveredNav(label)
-    setShouldPlaceNavPill(shouldPlaceInstantly)
-    setNavPill({
-      height: item.offsetHeight,
-      left: item.offsetLeft,
-      opacity: 1,
-      top: item.offsetTop,
-      width: item.offsetWidth,
-    })
-  }
+    const updateNavMode = () => {
+      const coverSection = document.querySelector<HTMLElement>('.about-contact-cover, .contact-dark-start')
+
+      if (!coverSection) {
+        setIsOverDarkSection(false)
+        return
+      }
+
+      const hasDomePseudo = coverSection.classList.contains('about-contact-cover')
+      const domeEdgeTop = hasDomePseudo
+        ? Number.parseFloat(window.getComputedStyle(coverSection, '::before').top) || 0
+        : 0
+      const domeTop = coverSection.getBoundingClientRect().top + domeEdgeTop
+
+      setIsOverDarkSection(domeTop <= 92)
+    }
+
+    updateNavMode()
+    window.addEventListener('scroll', updateNavMode, { passive: true })
+    window.addEventListener('resize', updateNavMode)
+
+    return () => {
+      window.removeEventListener('scroll', updateNavMode)
+      window.removeEventListener('resize', updateNavMode)
+    }
+  }, [isLightPage])
 
   return (
     <header
-      className="fixed top-0 z-50 w-full px-6 py-4 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:-z-10 before:h-32 before:bg-gradient-to-b before:from-black/90 before:via-black/45 before:to-transparent before:content-[''] sm:px-10 lg:px-14"
+      className={`fixed top-0 z-50 w-full px-6 py-4 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:-z-10 before:h-32 before:bg-gradient-to-b before:to-transparent before:content-[''] sm:px-10 lg:px-14 ${
+        useLightNav ? 'before:from-white/90 before:via-white/45' : 'before:from-black/90 before:via-black/45'
+      }`}
     >
       <nav className="relative z-20 flex w-full items-center justify-between gap-6">
         <a href="#home" className="flex items-center" aria-label="WebDev Studio home" onClick={scrollHome}>
           <span
             className={`text-lg font-semibold uppercase tracking-[0.08em] transition-colors md:text-xl ${
-              isMobileMenuVisible ? 'text-black lg:text-white' : 'text-white'
+              isMobileMenuVisible ? 'text-black lg:text-white' : useLightNav ? 'text-black' : 'text-white'
             }`}
           >
             WebDev Studio
           </span>
         </a>
 
-        <div
-          className="relative hidden items-center gap-3 rounded-full px-2 py-2 text-base lg:flex"
-          onMouseLeave={() => {
-            isNavPillActive.current = false
-            setHoveredNav(null)
-            setNavPill((pill) => ({ ...pill, opacity: 0 }))
-          }}
-        >
-          <motion.span
-            className="pointer-events-none absolute z-0 rounded-full bg-white"
-            animate={navPill}
-            onAnimationComplete={() => setShouldPlaceNavPill(false)}
-            transition={
-              shouldPlaceNavPill
-                ? { duration: 0 }
-                : { type: 'spring', stiffness: 460, damping: 36, mass: 0.7 }
-            }
-          />
+        <div className="relative hidden items-center gap-3 rounded-full px-2 py-2 text-[18px] lg:flex">
           {navLinks.map((link) => (
             <a
               key={link.label}
               href={link.href}
-              className={`relative z-10 rounded-full px-5 py-2.5 transition duration-300 ${
-                hoveredNav === link.label ? 'text-black' : 'text-white'
+              className={`circle-reveal nav-button relative z-10 rounded-full px-5 py-2.5 font-medium transition duration-300 ${
+                useLightNav ? 'light-circle-reveal text-black' : 'text-white'
               }`}
-              onFocus={(event) => moveNavPill(link.label, event)}
-              onMouseEnter={(event) => moveNavPill(link.label, event)}
             >
-              {link.label}
+              <span>{link.label}</span>
             </a>
           ))}
-          <a
-            href="#contact-us"
-            className={`group/nav-cta relative z-10 inline-flex items-center gap-2 rounded-full px-5 py-2.5 transition duration-300 ${
-              hoveredNav === 'Start a project' ? 'text-black' : 'text-white'
-            }`}
-            onFocus={(event) => moveNavPill('Start a project', event)}
-            onMouseEnter={(event) => moveNavPill('Start a project', event)}
-          >
-            <span>Start a project</span>
-            <span className="relative inline-flex h-4 w-4 items-center justify-center overflow-hidden">
-              <ArrowRight className="h-3.5 w-3.5 transition duration-200 md:group-hover/nav-cta:translate-x-5 md:group-hover/nav-cta:opacity-0" strokeWidth={1.8} />
-              <ArrowRight className="absolute h-3.5 w-3.5 -translate-x-5 opacity-0 transition duration-200 md:group-hover/nav-cta:translate-x-0 md:group-hover/nav-cta:opacity-100" strokeWidth={1.8} />
-            </span>
-          </a>
         </div>
 
         <button
@@ -400,7 +419,7 @@ function Navbar() {
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           onClick={isMobileMenuOpen ? closeMobileMenu : openMobileMenu}
         >
-          <MobileMenuIcon isInverted={isMobileMenuVisible} isOpen={isMobileMenuOpen} />
+          <MobileMenuIcon isInverted={isMobileMenuVisible || useLightNav} isOpen={isMobileMenuOpen} />
         </button>
       </nav>
 
@@ -537,7 +556,7 @@ function HeroSection() {
         <div className="flex flex-1 items-center justify-start py-12 text-left">
           <div className="w-full">
             <h1
-              className="text-[clamp(2.65rem,11vw,5rem)] font-medium uppercase leading-[0.82] tracking-[-0.075em] text-white md:text-[clamp(4rem,12vw,12.5rem)] md:leading-[0.78]"
+              className="text-[clamp(2.65rem,11vw,5rem)] font-medium uppercase leading-[0.82] tracking-[-0.045em] text-white md:text-[clamp(4rem,12vw,12.5rem)] md:leading-[0.78] md:tracking-[-0.05em]"
             >
               <TiltFlipRevealLine x={heroFirstX} delay={0.12} viewportAmount={0.2} className="whitespace-nowrap">
                 Creative
@@ -545,7 +564,7 @@ function HeroSection() {
               <TiltFlipRevealLine x={heroSecondX} delay={0.28} viewportAmount={0.2} className="whitespace-nowrap">
                 Web Design &
               </TiltFlipRevealLine>
-              <TiltFlipRevealLine x={heroThirdX} delay={0.44} viewportAmount={0.2} className="whitespace-nowrap">
+              <TiltFlipRevealLine x={heroThirdX} delay={0.44} viewportAmount={0.2} className="whitespace-nowrap tracking-[-0.025em] md:tracking-[-0.03em]">
                 Marketing
               </TiltFlipRevealLine>
               <TiltFlipRevealLine x={heroFourthX} delay={0.6} viewportAmount={0.2} className="whitespace-nowrap">
@@ -559,11 +578,11 @@ function HeroSection() {
   )
 }
 
-function ScrollCoverSection({ children }: { children: ReactNode }) {
+function ScrollCoverSection({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <section
       id="intro"
-      className="scroll-cover-section relative z-20 min-h-[92svh] bg-background px-6 pb-4 pt-[8vh] text-center md:min-h-[140svh] md:pb-9 md:pt-[10vh]"
+      className={`scroll-cover-section relative z-20 min-h-[92svh] bg-background px-6 pb-4 pt-[8vh] text-center md:min-h-[140svh] md:pb-9 md:pt-[10vh] ${className}`}
     >
       {children}
     </section>
@@ -636,6 +655,73 @@ function FlipRevealWord({
   return (
     <TiltFlipRevealLine
       className={`whitespace-nowrap text-left text-[clamp(2.8rem,13vw,3.25rem)] font-medium uppercase leading-[0.95] tracking-[-0.035em] text-white md:text-[clamp(4rem,12vw,200px)] md:leading-[0.88] md:tracking-[-0.075em] ${className ?? ''}`}
+      x={x}
+    >
+      {children}
+    </TiltFlipRevealLine>
+  )
+}
+
+function ContactFlipPair({ lines }: { lines: [string, string] }) {
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="show"
+      viewport={{
+        amount: 0.72,
+        margin: '0px 0px -8% 0px',
+        once: true,
+      }}
+      className="space-y-2 md:space-y-3"
+    >
+      {lines.map((line) => (
+        <span
+          key={line}
+          className="block perspective-[1400px] whitespace-nowrap text-left text-[clamp(2.8rem,13vw,3.25rem)] font-medium uppercase leading-[0.95] tracking-[-0.035em] text-white md:text-[clamp(4rem,12vw,200px)] md:leading-[0.88] md:tracking-[-0.075em]"
+          style={{
+            perspective: 1400,
+            perspectiveOrigin: '50% 60%',
+          }}
+        >
+          <motion.span
+            variants={{
+              hidden: { opacity: 0, rotateX: -58, rotateY: -3, rotateZ: 0.35 },
+              show: { opacity: 1, rotateX: 0, rotateY: 0, rotateZ: 0 },
+            }}
+            transition={{
+              duration: 2.25,
+              delay: 0,
+              ease: [0.2, 0.86, 0.2, 1],
+            }}
+            style={{
+              backfaceVisibility: 'hidden',
+              transformOrigin: '88% 100%',
+              transformStyle: 'preserve-3d',
+              willChange: 'transform, opacity',
+              WebkitBackfaceVisibility: 'hidden',
+            }}
+            className="inline-block transform-gpu"
+          >
+            {line}
+          </motion.span>
+        </span>
+      ))}
+    </motion.div>
+  )
+}
+
+function AboutFlipRevealWord({
+  children,
+  className,
+  x,
+}: {
+  children: string
+  className?: string
+  x?: MotionValue<number>
+}) {
+  return (
+    <TiltFlipRevealLine
+      className={`whitespace-nowrap py-[0.04em] text-left text-[clamp(3rem,13vw,6rem)] font-medium uppercase leading-[1] tracking-[-0.035em] text-black md:text-[clamp(5rem,10vw,10rem)] md:leading-[0.95] md:tracking-[-0.075em] ${className ?? ''}`}
       x={x}
     >
       {children}
@@ -876,7 +962,13 @@ function AnimatedLetterLine({
   }
 
   return (
-    <span className={`block overflow-visible ${className}`} aria-label={children}>
+    <motion.span
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.72, margin: '0px 0px -8% 0px' }}
+      className={`block overflow-visible ${className}`}
+      aria-label={children}
+    >
       <span aria-hidden="true" className="inline-block whitespace-nowrap">
         {letters.map((letter, index) => (
           <motion.span
@@ -889,7 +981,7 @@ function AnimatedLetterLine({
           </motion.span>
         ))}
       </span>
-    </span>
+    </motion.span>
   )
 }
 
@@ -900,28 +992,53 @@ function MissionSection() {
       className="relative min-h-[82svh] overflow-hidden px-6 py-20 md:min-h-[150svh] md:px-12 md:py-44"
     >
       <h2 className="sr-only">Shape A Better Future</h2>
+      <motion.p
+        {...fadeUp(0.08)}
+        className="relative z-10 max-w-[22rem] text-base leading-7 text-white/75 md:absolute md:left-12 md:top-16 md:max-w-[27rem] md:text-xl md:leading-8"
+      >
+        Since our inception, we&rsquo;ve been committed to using our creativity and
+        resources to shape a better future for all. That means creating positive
+        impact&mdash;for our business, our people, and our community.
+      </motion.p>
+      <motion.div
+        {...fadeUp(0.18)}
+        className="relative z-10 mt-[58svh] max-w-[23rem] md:absolute md:left-12 md:top-[61%] md:mt-0 md:max-w-[31rem]"
+      >
+        <p className="text-base leading-7 text-white/75 md:text-xl md:leading-8">
+          We are united by a strong set of values that drive us in all parts of our
+          work. We put people first, we pursue excellence in all we do, we embrace
+          a growth mindset, and we are dedicated to applying truth in action.
+        </p>
+        <a
+          href="#process"
+          className="circle-reveal group/about mt-7 inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/40 bg-black px-6 text-sm font-semibold text-white transition duration-300"
+        >
+          <span>Learn more about us</span>
+          <span className="relative inline-flex h-4 w-4 items-center justify-center overflow-hidden">
+            <ArrowRight className="h-4 w-4 transition duration-200 md:group-hover/about:translate-x-5 md:group-hover/about:opacity-0" aria-hidden="true" />
+            <ArrowRight className="absolute h-4 w-4 -translate-x-5 text-background opacity-0 transition duration-200 md:group-hover/about:translate-x-0 md:group-hover/about:opacity-100" aria-hidden="true" />
+          </span>
+        </a>
+      </motion.div>
       <motion.div
         aria-hidden="true"
         className="absolute inset-0 text-white"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.28 }}
       >
         <AnimatedLetterLine
           delay={0}
-          className="absolute right-2 top-[18%] text-right font-serif text-[7.6rem] leading-[0.78] tracking-normal md:right-[18vw] md:top-16 md:text-[clamp(9rem,31vw,25.625rem)]"
+          className="absolute -right-8 top-[18%] text-right font-serif text-[7.6rem] leading-[0.78] tracking-normal md:right-[10vw] md:top-16 md:text-[clamp(9rem,31vw,25.625rem)]"
         >
           Shape
         </AnimatedLetterLine>
         <AnimatedLetterLine
-          delay={0.38}
+          delay={0}
           className="absolute left-6 top-[44%] -translate-y-1/2 text-left text-[4.55rem] font-semibold leading-[0.88] tracking-normal md:left-12 md:top-[40%] md:text-[clamp(5rem,18vw,16rem)] md:leading-[0.85]"
         >
           A better
         </AnimatedLetterLine>
         <AnimatedLetterLine
-          delay={0.9}
-          className="absolute right-2 top-[63%] -translate-y-1/2 text-right font-serif text-[7.6rem] italic leading-[0.78] tracking-normal md:right-[14vw] md:top-[68%] md:text-[clamp(9rem,30vw,25rem)]"
+          delay={0}
+          className="absolute -right-8 top-[63%] -translate-y-1/2 text-right font-serif text-[7.6rem] italic leading-[0.78] tracking-normal md:right-[7vw] md:top-[68%] md:text-[clamp(9rem,30vw,25rem)]"
         >
           Future.
         </AnimatedLetterLine>
@@ -985,22 +1102,23 @@ function SolutionSection() {
           </motion.p>
         </div>
 
-        <motion.div
-          {...fadeUp(0.26)}
-          className="mt-16 border-t border-white/35 md:mt-20"
-        >
-          {accordionItems.map((item) => {
+        <div className="mt-16 border-t border-white/35 md:mt-20">
+          {accordionItems.map((item, index) => {
             const isOpen = activeAccordionItem === item.id
 
             return (
-              <div key={item.id} className="border-b border-white/20 py-10 md:py-12">
+              <motion.div
+                key={item.id}
+                {...fadeUp(index * 0.08)}
+                className="border-b border-white/20 py-10 md:py-12"
+              >
                 <button
                   type="button"
                   className="group grid w-full grid-cols-[minmax(0,1fr)_96px] items-center gap-6 text-left md:grid-cols-[minmax(0,1fr)_190px] md:gap-8"
                   aria-expanded={isOpen}
                   onClick={() => setActiveAccordionItem((activeItem) => (activeItem === item.id ? null : item.id))}
                 >
-                  <span className="font-serif text-5xl uppercase leading-none tracking-[-0.04em] text-white md:text-[4.7rem]">
+                  <span className="text-5xl uppercase leading-none tracking-[-0.04em] text-white md:text-[4.7rem]">
                     {item.title}
                   </span>
                   <span
@@ -1029,10 +1147,10 @@ function SolutionSection() {
                     </motion.div>
                   ) : null}
                 </AnimatePresence>
-              </div>
+              </motion.div>
             )
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   )
@@ -1156,7 +1274,7 @@ function PricingCard({ index, plan }: { index: number; plan: PricingPlan }) {
           href={plan.href}
           target="_blank"
           rel="noreferrer noopener"
-          className="circle-reveal pricing-button group/price inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-white/40 bg-black text-sm font-semibold text-white transition duration-300"
+          className="circle-reveal pricing-button group/price inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-white/40 bg-black text-sm font-semibold text-white transition duration-300"
         >
           <span>{plan.cta}</span>
           <span className="relative inline-flex h-4 w-4 items-center justify-center overflow-hidden">
@@ -1170,12 +1288,12 @@ function PricingCard({ index, plan }: { index: number; plan: PricingPlan }) {
 }
 
 function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
-  const footerContentOpacity = useTransform(revealProgress, [0.5, 1], [0, 1])
-  const footerContentY = useTransform(revealProgress, [0.5, 1], [64, 0])
+  const footerContentOpacity = useTransform(revealProgress, [0.35, 0.9], [0, 1])
+  const footerContentY = useTransform(revealProgress, [0.35, 0.9], [64, 0])
 
   return (
     <footer
-      className="sticky bottom-0 z-0 mt-16 min-h-[92svh] bg-background px-6 pb-12 pt-20 md:mt-32 md:min-h-screen md:px-12 md:pb-24 md:pt-40"
+      className="sticky bottom-0 z-0 mt-16 min-h-[92svh] bg-background px-6 pb-12 pt-28 md:mt-32 md:min-h-screen md:px-12 md:pb-24 md:pt-48"
     >
       <motion.div
         style={{ opacity: footerContentOpacity, y: footerContentY }}
@@ -1332,8 +1450,479 @@ function SmoothScroll() {
   return null
 }
 
+function usePathname() {
+  const [pathname, setPathname] = useState(() => window.location.pathname)
+
+  useEffect(() => {
+    const updatePathname = () => setPathname(window.location.pathname)
+
+    window.addEventListener('popstate', updatePathname)
+    window.addEventListener('hashchange', updatePathname)
+
+    return () => {
+      window.removeEventListener('popstate', updatePathname)
+      window.removeEventListener('hashchange', updatePathname)
+    }
+  }, [])
+
+  return pathname
+}
+
+function useMorphingContactDome() {
+  useEffect(() => {
+    let animationFrame = 0
+
+    const updateDomeShape = () => {
+      document.querySelectorAll<HTMLElement>('.about-contact-cover').forEach((cover) => {
+        const viewportWidth = window.innerWidth
+        const arcOffset = Math.min(Math.max(viewportWidth * 0.34, 340), 560)
+        const domeTop = cover.getBoundingClientRect().top - arcOffset
+        const progress = Math.min(Math.max((window.innerHeight - domeTop) / (window.innerHeight - 120), 0), 1)
+        const heightMultiplier = 3.1 - progress * 0.35
+        const widthVw = 172 + progress * 18
+        const topOffset = arcOffset * (1.08 - progress * 0.08)
+
+        cover.style.setProperty('--about-dome-width', `${widthVw}vw`)
+        cover.style.setProperty('--about-dome-height', `${arcOffset * heightMultiplier}px`)
+        cover.style.setProperty('--about-dome-top', `${topOffset * -1}px`)
+      })
+    }
+
+    const scheduleDomeShapeUpdate = () => {
+      window.cancelAnimationFrame(animationFrame)
+      animationFrame = window.requestAnimationFrame(updateDomeShape)
+    }
+
+    updateDomeShape()
+    window.addEventListener('scroll', scheduleDomeShapeUpdate, { passive: true })
+    window.addEventListener('resize', scheduleDomeShapeUpdate)
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame)
+      window.removeEventListener('scroll', scheduleDomeShapeUpdate)
+      window.removeEventListener('resize', scheduleDomeShapeUpdate)
+    }
+  }, [])
+}
+
+function QuestionContactSection({
+  contentClassName = '',
+  coverClassName = '',
+  headingLayout = 'stacked',
+  id = 'works-contact',
+  sectionClassName = '',
+}: {
+  contentClassName?: string
+  coverClassName?: string
+  headingLayout?: 'stacked' | 'paired'
+  id?: string
+  sectionClassName?: string
+}) {
+  return (
+    <ScrollCoverSection className={coverClassName}>
+      <section
+        id={id}
+        className={`mx-auto flex min-h-[120svh] max-w-[92rem] flex-col items-center justify-center py-16 text-center md:min-h-[140svh] md:py-24 ${sectionClassName}`}
+      >
+        <div className={`w-full ${contentClassName}`}>
+          <h2 className="sr-only">Have a question? Book a free call.</h2>
+          {headingLayout === 'paired' ? (
+            <div aria-hidden="true" className="mx-auto w-fit max-w-full space-y-2 text-left md:space-y-3">
+              <ContactFlipPair lines={['HAVE A', 'QUESTION?']} />
+              <ContactFlipPair lines={['BOOK A FREE', 'CALL.']} />
+            </div>
+          ) : (
+            <div aria-hidden="true" className="mx-auto w-fit max-w-full space-y-2 text-left md:space-y-3">
+              <FlipRevealWord>HAVE A</FlipRevealWord>
+              <FlipRevealWord>QUESTION?</FlipRevealWord>
+              <FlipRevealWord>BOOK A FREE</FlipRevealWord>
+              <FlipRevealWord>CALL.</FlipRevealWord>
+            </div>
+          )}
+
+          <motion.form
+            {...fadeUp(0.18)}
+            className="mx-auto mt-16 grid w-full max-w-4xl gap-x-8 gap-y-8 md:mt-24 md:grid-cols-2"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <label className="sr-only" htmlFor={`${id}-name`}>Name</label>
+            <input
+              id={`${id}-name`}
+              type="text"
+              name="name"
+              placeholder="Name"
+              className="h-14 border-0 border-b border-white/35 bg-transparent px-0 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:text-left"
+            />
+            <label className="sr-only" htmlFor={`${id}-email`}>Email</label>
+            <input
+              id={`${id}-email`}
+              type="email"
+              name="email"
+              placeholder="Email"
+              className="h-14 border-0 border-b border-white/35 bg-transparent px-0 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:text-left"
+            />
+            <label className="sr-only" htmlFor={`${id}-message`}>Message</label>
+            <textarea
+              id={`${id}-message`}
+              name="message"
+              placeholder="Message"
+              rows={3}
+              className="min-h-28 resize-none border-0 border-b border-white/35 bg-transparent px-0 py-5 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:col-span-2 md:text-left"
+            />
+            <button
+              type="submit"
+              className="circle-reveal group/send-message mx-auto inline-flex h-14 w-fit items-center justify-center gap-2 rounded-full border border-white/40 bg-black px-8 text-sm font-semibold uppercase tracking-[0.08em] text-white transition duration-300 md:col-span-2"
+            >
+              <span>Send Message</span>
+              <span className="relative inline-flex h-4 w-4 items-center justify-center overflow-hidden">
+                <ArrowRight className="h-4 w-4 transition duration-200 md:group-hover/send-message:translate-x-5 md:group-hover/send-message:opacity-0" aria-hidden="true" />
+                <ArrowRight className="absolute h-4 w-4 -translate-x-5 text-background opacity-0 transition duration-200 md:group-hover/send-message:translate-x-0 md:group-hover/send-message:opacity-100" aria-hidden="true" />
+              </span>
+            </button>
+          </motion.form>
+        </div>
+      </section>
+    </ScrollCoverSection>
+  )
+}
+
+function WorksPage() {
+  const worksRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: worksRef,
+    offset: ['start start', 'end end'],
+  })
+  const galleryY = useTransform(scrollYProgress, [0, 0.58, 1], ['0vh', '-190vh', '-190vh'])
+
+  useMorphingContactDome()
+
+  return (
+    <div ref={worksRef} className="relative h-[550svh] bg-background">
+      <section className="sticky top-0 z-0 h-screen overflow-hidden bg-white px-6 pt-24 text-black md:px-12 md:pt-32">
+        <div className="pointer-events-none absolute inset-x-0 top-[16svh] z-0 flex justify-center px-6 text-center">
+          <motion.h1
+            {...fadeUp(0)}
+            className="text-[clamp(5rem,22vw,22rem)] font-medium uppercase leading-[0.78] tracking-[-0.075em] text-black"
+          >
+            WORKS
+          </motion.h1>
+        </div>
+
+        <motion.div style={{ y: galleryY }} className="absolute inset-x-0 top-28 z-10 h-[260svh] md:top-32">
+          {workPills.map((work, index) => (
+            <motion.a
+              key={work.title}
+              href="#works-contact"
+              {...fadeUp(0.08 + index * 0.06)}
+              className={`group/work-pill absolute block w-[88vw] max-w-[770px] text-black transition duration-500 hover:scale-[1.03] md:w-[770px] ${work.className}`}
+            >
+              <span className="relative block h-64 overflow-hidden rounded-full border border-black/20 bg-white md:h-[480px]">
+                <img
+                  src={work.image}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover/work-pill:scale-105"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                />
+                <img
+                  src={work.hoverImage}
+                  alt=""
+                  className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition duration-700 group-hover/work-pill:scale-100 group-hover/work-pill:opacity-100"
+                  loading="lazy"
+                />
+                <span className="absolute inset-0 bg-black/18 transition duration-500 group-hover/work-pill:bg-black/8" />
+              </span>
+              <span className="mt-5 block px-2 text-center md:mt-6 md:px-4">
+                <span className="block whitespace-nowrap text-xl font-medium uppercase tracking-[-0.02em] md:text-3xl">
+                  {work.title}
+                </span>
+                <span className="mt-2 block text-xs uppercase tracking-[2px] text-black/55">
+                  {work.type}
+                </span>
+              </span>
+            </motion.a>
+          ))}
+        </motion.div>
+      </section>
+
+      <div className="absolute inset-x-0 bottom-0 top-[450svh] z-10 bg-background" aria-hidden="true" />
+
+      <div className="absolute inset-x-0 top-[450svh] z-20">
+        <QuestionContactSection
+          id="works-contact"
+          contentClassName="-mt-48 md:-mt-72"
+          coverClassName="about-contact-cover"
+          headingLayout="paired"
+          sectionClassName="!min-h-0 justify-start !py-0 pb-0 md:!min-h-0 md:!py-0 md:pb-0"
+        />
+      </div>
+    </div>
+  )
+}
+
+function AboutPage() {
+  const aboutRef = useRef<HTMLDivElement>(null)
+  const isDesktop = useIsDesktopBreakpoint()
+  const { scrollYProgress } = useScroll({
+    target: aboutRef,
+    offset: ['start 80%', 'end 20%'],
+  })
+  const offsets = isDesktop
+    ? { purpose: 34, care: -28, clarity: -38, next: 30 }
+    : { purpose: 12, care: -10, clarity: -14, next: 12 }
+  const purposeX = useTransform(scrollYProgress, [0, 1], [0, offsets.purpose])
+  const careX = useTransform(scrollYProgress, [0, 1], [0, offsets.care])
+  const clarityX = useTransform(scrollYProgress, [0, 1], [0, offsets.clarity])
+  const nextX = useTransform(scrollYProgress, [0, 1], [0, offsets.next])
+
+  useEffect(() => {
+    let animationFrame = 0
+
+    const updateDomeShape = () => {
+      const cover = document.querySelector<HTMLElement>('.about-contact-cover')
+
+      if (!cover) {
+        return
+      }
+
+      const viewportWidth = window.innerWidth
+      const arcOffset = Math.min(Math.max(viewportWidth * 0.34, 340), 560)
+      const domeTop = cover.getBoundingClientRect().top - arcOffset
+      const progress = Math.min(Math.max((window.innerHeight - domeTop) / (window.innerHeight - 120), 0), 1)
+      const heightMultiplier = 3.1 - progress * 0.35
+      const widthVw = 172 + progress * 18
+      const topOffset = arcOffset * (1.08 - progress * 0.08)
+
+      cover.style.setProperty('--about-dome-width', `${widthVw}vw`)
+      cover.style.setProperty('--about-dome-height', `${arcOffset * heightMultiplier}px`)
+      cover.style.setProperty('--about-dome-top', `${topOffset * -1}px`)
+    }
+
+    const scheduleDomeShapeUpdate = () => {
+      window.cancelAnimationFrame(animationFrame)
+      animationFrame = window.requestAnimationFrame(updateDomeShape)
+    }
+
+    updateDomeShape()
+    window.addEventListener('scroll', scheduleDomeShapeUpdate, { passive: true })
+    window.addEventListener('resize', scheduleDomeShapeUpdate)
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame)
+      window.removeEventListener('scroll', scheduleDomeShapeUpdate)
+      window.removeEventListener('resize', scheduleDomeShapeUpdate)
+    }
+  }, [])
+
+  return (
+    <>
+      <section className="flex min-h-screen items-center justify-center bg-white px-6 py-28 text-center text-black md:px-12">
+        <motion.h1
+          {...fadeUp(0)}
+          className="text-center text-[clamp(4rem,17vw,17rem)] font-medium uppercase leading-[0.8] tracking-[-0.07em]"
+        >
+          ABOUT US
+        </motion.h1>
+      </section>
+
+      <section className="bg-white px-6 pb-[26rem] pt-12 text-black md:px-12 md:pb-[46rem] md:pt-24">
+        <div ref={aboutRef} className="mx-auto max-w-[92rem]">
+          <p className="sr-only">
+            We design, optimize, and market your brand online.
+          </p>
+          <div aria-hidden="true" className="mx-auto w-fit max-w-full space-y-2 overflow-visible px-[0.08em] text-left md:space-y-3">
+            <AboutFlipRevealWord x={purposeX}>WE DESIGN</AboutFlipRevealWord>
+            <AboutFlipRevealWord x={careX}>WE OPTIMIZE</AboutFlipRevealWord>
+            <AboutFlipRevealWord x={clarityX}>WE MARKET</AboutFlipRevealWord>
+            <AboutFlipRevealWord x={nextX}>YOUR BRAND</AboutFlipRevealWord>
+            <AboutFlipRevealWord x={purposeX}>ONLINE</AboutFlipRevealWord>
+          </div>
+
+          <motion.div
+            {...fadeUp(0.28)}
+            className="mt-20 text-left md:ml-[32vw] md:mt-28 md:max-w-[42rem]"
+          >
+            <div className="max-w-md">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-black/45">
+                What We Solve
+              </p>
+              <h2 className="mt-5 max-w-md text-3xl font-medium leading-[1.05] tracking-[-0.04em] text-black md:text-5xl">
+                Online presence should not hold the business back.
+              </h2>
+            </div>
+
+            <div className="mt-12 space-y-8 text-lg leading-8 text-black/72 md:mt-16 md:text-[2rem] md:leading-[1.38]">
+              <p>
+                As a web development, design, SEO, and social marketing studio, we
+                help companies fix the digital problems that quietly cost them
+                attention, trust, and conversions.
+              </p>
+
+              <div className="space-y-10 md:space-y-14">
+                {[
+                  'Outdated or poorly structured websites that fail to communicate the brand, offer, and value clearly.',
+                  'Confusing user journeys that make visitors work too hard, increasing bounce rates and lowering conversions.',
+                  'Slow, unresponsive, or mobile-unfriendly experiences that make the business feel less credible.',
+                  'Limited functionality, weak SEO foundations, and disconnected marketing systems that make growth harder than it needs to be.',
+                ].map((item) => (
+                  <p key={item} className="flex gap-5 text-black/68">
+                    <span className="mt-[0.72em] h-1.5 w-1.5 shrink-0 rounded-full bg-black/70" aria-hidden="true" />
+                    <span>{item}</span>
+                  </p>
+                ))}
+              </div>
+
+              <p>
+                We bring strategy, interface design, modern development, SEO, and
+                campaign thinking together to build websites that look sharp, work
+                smoothly, and stay aligned with real business goals.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <QuestionContactSection
+        id="about-contact"
+        contentClassName="-mt-48 md:-mt-72"
+        coverClassName="about-contact-cover"
+        headingLayout="paired"
+        sectionClassName="!min-h-0 justify-start !py-0 pb-0 md:!min-h-0 md:!py-0 md:pb-0"
+      />
+    </>
+  )
+}
+
+function ContactPage() {
+  return (
+    <>
+      <section className="min-h-screen overflow-hidden bg-white text-black">
+        <div className="flex min-h-[58svh] items-center justify-center px-6 pb-16 pt-28 text-center md:px-12 md:pt-32">
+          <motion.h1
+            {...fadeUp(0)}
+            className="text-[clamp(4.8rem,18vw,18rem)] font-medium uppercase leading-[0.78] tracking-[-0.075em]"
+          >
+            CONTACT
+          </motion.h1>
+        </div>
+
+        <div className="contact-hero-dome contact-dark-start relative min-h-[42svh] bg-background px-6 pb-16 pt-16 text-white md:px-12 md:pb-20 md:pt-20">
+          <div className="relative z-10 mx-auto max-w-5xl text-center">
+            <motion.p
+              {...fadeUp(0.08)}
+              className="mx-auto max-w-2xl text-xl leading-8 text-white/80 md:text-2xl md:leading-9"
+            >
+              Book a free consultation call or just type me.
+              <br />
+              Let&rsquo;s meet and talk about your brand.
+            </motion.p>
+
+            <motion.form
+              {...fadeUp(0.18)}
+              className="mx-auto mt-12 grid w-full max-w-4xl gap-x-8 gap-y-8 md:mt-16 md:grid-cols-2"
+              onSubmit={(event) => event.preventDefault()}
+            >
+              <label className="sr-only" htmlFor="contact-name">Name</label>
+              <input
+                id="contact-name"
+                type="text"
+                name="name"
+                placeholder="Name"
+                className="h-14 border-0 border-b border-white/35 bg-transparent px-0 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:text-left"
+              />
+              <label className="sr-only" htmlFor="contact-email">Email</label>
+              <input
+                id="contact-email"
+                type="email"
+                name="email"
+                placeholder="Email"
+                className="h-14 border-0 border-b border-white/35 bg-transparent px-0 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:text-left"
+              />
+              <label className="sr-only" htmlFor="contact-message">Message</label>
+              <textarea
+                id="contact-message"
+                name="message"
+                placeholder="Message"
+                rows={3}
+                className="min-h-28 resize-none border-0 border-b border-white/35 bg-transparent px-0 py-5 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:col-span-2 md:text-left"
+              />
+              <button
+                type="submit"
+                className="circle-reveal group/contact-send mx-auto inline-flex h-14 w-fit items-center justify-center gap-2 rounded-full border border-white/40 bg-black px-8 text-sm font-semibold uppercase tracking-[0.08em] text-white transition duration-300 md:col-span-2"
+              >
+                <span>Send Message</span>
+                <span className="relative inline-flex h-4 w-4 items-center justify-center overflow-hidden">
+                  <ArrowRight className="h-4 w-4 transition duration-200 md:group-hover/contact-send:translate-x-5 md:group-hover/contact-send:opacity-0" aria-hidden="true" />
+                  <ArrowRight className="absolute h-4 w-4 -translate-x-5 text-background opacity-0 transition duration-200 md:group-hover/contact-send:translate-x-0 md:group-hover/contact-send:opacity-100" aria-hidden="true" />
+                </span>
+              </button>
+            </motion.form>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-background px-6 py-20 text-center text-white md:px-12 md:py-28">
+        <motion.div
+          {...fadeUp(0)}
+          className="mx-auto grid max-w-6xl items-start gap-10 md:grid-cols-3 md:gap-8"
+        >
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/45">
+              Location
+            </p>
+            <p className="mt-4 text-lg leading-7 text-white md:text-2xl md:leading-8">
+              428 Market Street, Suite 1200
+              <br />
+              San Francisco, CA 94111
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/45">
+              Email
+            </p>
+            <a
+              href="mailto:hello@webdevstudio.co"
+              className="mt-4 inline-block text-lg text-white underline decoration-white/25 underline-offset-8 transition hover:decoration-white md:text-2xl"
+            >
+              hello@webdevstudio.co
+            </a>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 md:pt-1">
+            <p className="w-full text-xs font-semibold uppercase tracking-[0.24em] text-white/45">
+              Socials
+            </p>
+            {socialLinks.map((social) => {
+              const Icon = social.icon
+
+              return (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  className="circle-reveal social-button inline-flex h-[55px] w-[55px] items-center justify-center rounded-full border border-white/25 bg-black text-white transition duration-300"
+                  aria-label={social.label}
+                >
+                  {Icon ? (
+                    <Icon className="social-button-icon h-6 w-6" strokeWidth={1.8} aria-hidden="true" />
+                  ) : (
+                    <span className="social-button-icon text-base font-semibold">T</span>
+                  )}
+                </a>
+              )
+            })}
+          </div>
+        </motion.div>
+      </section>
+    </>
+  )
+}
+
 function App() {
   const pageContentRef = useRef<HTMLDivElement>(null)
+  const pathname = usePathname()
+  const isWorksPage = pathname === '/works'
+  const isAboutPage = pathname === '/about'
+  const isContactPage = pathname === '/contact'
   const { scrollYProgress: footerRevealProgress } = useScroll({
     target: pageContentRef,
     offset: ['end end', 'end start'],
@@ -1345,15 +1934,25 @@ function App() {
       <HashScroller />
       {/* Keep page content above the sticky footer until the footer reveal zone. */}
       <div ref={pageContentRef} className="relative z-10 bg-background">
-        <Navbar />
-        <HeroScrollScene />
-        <FeaturedWorkSection />
-        <MissionSection />
-        <SolutionSection />
-        <ServicesSection />
-        <CtaSection />
+        <Navbar isLightPage={isAboutPage || isWorksPage || isContactPage} />
+        {isWorksPage ? (
+          <WorksPage />
+        ) : isAboutPage ? (
+          <AboutPage />
+        ) : isContactPage ? (
+          <ContactPage />
+        ) : (
+          <>
+            <HeroScrollScene />
+            <FeaturedWorkSection />
+            <MissionSection />
+            <SolutionSection />
+            <ServicesSection />
+            <CtaSection />
+          </>
+        )}
       </div>
-      <Footer revealProgress={footerRevealProgress} />
+      {isContactPage ? null : <Footer revealProgress={footerRevealProgress} />}
     </main>
   )
 }

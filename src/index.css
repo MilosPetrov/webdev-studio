@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  @font-face {
+    font-family: 'Roundo';
+    src: url('./assets/fonts/roundo/Roundo-Variable.woff2') format('woff2');
+    font-display: swap;
+    font-style: normal;
+    font-weight: 200 700;
+  }
+
   :root {
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
@@ -57,7 +65,7 @@
 
   body {
     @apply m-0 bg-background text-foreground antialiased;
-    font-family: Inter, sans-serif;
+    font-family: Roundo, Inter, sans-serif;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -116,6 +124,49 @@
     z-index: 1;
   }
 
+  .about-contact-cover {
+    --cover-arc-offset: clamp(340px, 34vw, 560px);
+    margin-bottom: 0;
+    margin-top: 0;
+    min-height: 0 !important;
+  }
+
+  .about-contact-cover::before {
+    top: var(--about-dome-top, calc(var(--cover-arc-offset) * -1));
+    width: var(--about-dome-width, 185vw);
+    height: var(--about-dome-height, calc(var(--cover-arc-offset) * 2.8));
+    border-radius: 50%;
+  }
+
+  .contact-hero-dome {
+    isolation: isolate;
+  }
+
+  .contact-hero-dome::before {
+    content: '';
+    position: absolute;
+    top: calc(clamp(45px, 5.5vw, 95px) * -1);
+    left: 50%;
+    z-index: 0;
+    width: 150vw;
+    height: clamp(420px, 52vw, 780px);
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: hsl(var(--background));
+    pointer-events: none;
+  }
+
+  .contact-hero-dome > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (min-width: 768px) {
+    .about-contact-cover {
+      min-height: 0 !important;
+    }
+  }
+
   .circle-reveal {
     position: relative;
     isolation: isolate;
@@ -140,6 +191,10 @@
     z-index: 1;
   }
 
+  .light-circle-reveal::before {
+    background: hsl(var(--background));
+  }
+
   @media (hover: hover) and (pointer: fine) {
     .circle-reveal:hover,
     .group:hover .circle-reveal {
@@ -148,8 +203,16 @@
       color: hsl(var(--background));
     }
 
+    .light-circle-reveal:hover {
+      color: hsl(var(--foreground));
+    }
+
     .pricing-button:hover {
-      transform: scale(1.02);
+      transform: scale(1.04);
+    }
+
+    .nav-button:hover {
+      transform: scale(1.04);
     }
 
     .circle-reveal:hover::before,
