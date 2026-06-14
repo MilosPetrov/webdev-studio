@@ -96,6 +96,11 @@
     transform: translateZ(0);
   }
 
+  .hero-text {
+    color: #f3e6c8;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.28);
+  }
+
   /* Higher z-index and solid background let this section physically cover the hero. */
   .scroll-cover-section {
     --cover-arc-offset: clamp(130px, 15vw, 220px);

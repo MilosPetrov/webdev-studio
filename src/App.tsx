@@ -550,13 +550,13 @@ function HeroSection() {
         playsInline
         onCanPlay={(event) => playMutedVideo(event.currentTarget)}
       />
-      <div className="absolute inset-0 z-[1] bg-black/45" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/20 via-transparent to-black/10" />
 
       <div className="relative z-10 flex h-full w-full flex-col pb-10 pt-28 sm:pt-32 lg:pb-14">
         <div className="flex flex-1 items-center justify-start py-12 text-left">
           <div className="w-full">
             <h1
-              className="text-[clamp(2.65rem,11vw,5rem)] font-medium uppercase leading-[0.82] tracking-[-0.045em] text-white md:text-[clamp(4rem,12vw,12.5rem)] md:leading-[0.78] md:tracking-[-0.05em]"
+              className="hero-text inline-block max-w-full text-[clamp(2.65rem,11vw,5rem)] font-medium uppercase leading-[0.96] tracking-[-0.045em] md:text-[clamp(4rem,12vw,12.5rem)] md:leading-[0.92] md:tracking-[-0.05em]"
             >
               <TiltFlipRevealLine x={heroFirstX} delay={0.12} viewportAmount={0.2} className="whitespace-nowrap">
                 Creative
