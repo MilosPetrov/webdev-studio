@@ -57,11 +57,11 @@ const socialLinks = [
   { label: 'TikTok', href: '#home' },
 ]
 
-function PhaseOneLogo() {
+function PhaseOneLogo({ footer = false }: { footer?: boolean }) {
   return (
-    <span className="inline-flex items-center gap-3.5" aria-hidden="true">
+    <span className={`inline-flex items-center ${footer ? 'gap-4' : 'gap-3.5'}`} aria-hidden="true">
       <svg
-        className="h-10 w-10 shrink-0"
+        className={footer ? 'h-14 w-14 shrink-0' : 'h-10 w-10 shrink-0'}
         viewBox="0 0 48 48"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -74,14 +74,11 @@ function PhaseOneLogo() {
           d="m16.5 28.1 13.8-9.35V45h-7.1V28.1h-6.7Z"
           fill="currentColor"
         />
-        <g fill="currentColor" opacity="0.58">
-          <path d="M6 41.5h2.3V45H6z" />
-          <path d="M10.4 38.5h2.3V45h-2.3z" />
-          <path d="M14.8 35h2.3v10h-2.3z" />
-          <path d="M19.2 31h2.3v14h-2.3z" />
-        </g>
       </svg>
-      <span className="text-[0.82rem] font-medium uppercase leading-none tracking-[0.22em] md:text-[0.95rem]">
+      <span className={footer
+        ? 'text-lg font-semibold uppercase leading-none tracking-[0.22em] md:text-xl'
+        : 'text-[0.82rem] font-medium uppercase leading-none tracking-[0.22em] md:text-[0.95rem]'
+      }>
         Phase One
       </span>
     </span>
@@ -308,6 +305,27 @@ function Navbar({
     setIsMobileMenuOpen(false)
   }, [isMobileMenuOpen])
 
+  const scrollToDocumentTop = () => {
+    if (smoothScrollInstance) {
+      smoothScrollInstance.scrollTo(0, {
+        duration: 1.8,
+        force: true,
+        lock: true,
+        onComplete: () => window.scrollTo(0, 0),
+      })
+      return
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const scheduleScrollToDocumentTop = () => {
+    // Run after the mobile menu's scroll-lock cleanup has restored its saved position.
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(scrollToDocumentTop)
+    })
+  }
+
   const scrollHome = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
     closeMobileMenu()
@@ -318,18 +336,14 @@ function Navbar({
     }
 
     window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+    scheduleScrollToDocumentTop()
+  }
 
-    if (smoothScrollInstance) {
-      smoothScrollInstance.scrollTo(0, {
-        duration: 1.05,
-        force: true,
-        lock: true,
-        onComplete: () => window.scrollTo(0, 0),
-      })
-      return
-    }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  const handleActiveNavClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    closeMobileMenu()
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+    scheduleScrollToDocumentTop()
   }
 
   useEffect(() => {
@@ -436,7 +450,9 @@ function Navbar({
           onClick={scrollHome}
         >
           <span className={isMobileMenuVisible ? 'text-black lg:text-white' : 'text-current'}>
-            <PhaseOneLogo />
+            <span className="text-[1.15rem] font-normal uppercase leading-none tracking-[-0.16px] md:text-[1.35rem]">
+              Phase One
+            </span>
           </span>
         </a>
 
@@ -449,6 +465,7 @@ function Navbar({
                 key={link.label}
                 href={link.href}
                 aria-current={isActive ? 'page' : undefined}
+                onClick={isActive ? handleActiveNavClick : undefined}
                 className={`circle-reveal nav-button relative z-10 rounded-full px-5 py-2.5 font-medium transition duration-300 ${
                   useLightNav ? 'light-circle-reveal text-black' : 'text-white'
                 } ${isActive ? 'nav-button-active' : ''}`}
@@ -504,7 +521,14 @@ function Navbar({
                     className={`flex h-[90px] items-center justify-center border-b border-black/20 px-6 text-center text-[50px] font-medium leading-none tracking-normal transition-colors duration-300 ${
                       isActive ? 'bg-black text-white' : 'text-black'
                     }`}
-                    onClick={closeMobileMenu}
+                    onClick={(event) => {
+                      if (isActive) {
+                        handleActiveNavClick(event)
+                        return
+                      }
+
+                      closeMobileMenu()
+                    }}
                   >
                     {link.label}
                   </a>
@@ -700,15 +724,17 @@ function TiltFlipRevealLine({
 function FlipRevealWord({
   children,
   className,
+  colorClassName = 'text-white',
   x,
 }: {
   children: string
   className?: string
+  colorClassName?: string
   x?: MotionValue<number>
 }) {
   return (
     <TiltFlipRevealLine
-      className={`whitespace-nowrap text-left text-[clamp(2.8rem,13vw,3.25rem)] font-medium uppercase leading-[0.95] tracking-[-0.035em] text-white md:text-[clamp(4rem,12vw,200px)] md:leading-[0.88] md:tracking-[-0.075em] ${className ?? ''}`}
+      className={`whitespace-nowrap text-left text-[clamp(2.8rem,13vw,3.25rem)] font-medium uppercase leading-[0.95] tracking-[-0.035em] md:text-[clamp(4rem,12vw,200px)] md:leading-[0.88] md:tracking-[-0.075em] ${colorClassName} ${className ?? ''}`}
       x={x}
     >
       {children}
@@ -910,11 +936,11 @@ function CoverStatementSection() {
       >
         <h2 className="sr-only">Your Business, Elevated, Stand Out, Grow Fast</h2>
         <div aria-hidden="true" className="space-y-2 md:space-y-3">
-          <FlipRevealWord x={yourX}>YOUR</FlipRevealWord>
-          <FlipRevealWord x={businessX} className="md:pl-[3vw]">BUSINESS,</FlipRevealWord>
-          <FlipRevealWord x={elevatedX} className="md:-ml-[2vw]">ELEVATED</FlipRevealWord>
-          <FlipRevealWord x={standOutX}>STAND OUT,</FlipRevealWord>
-          <FlipRevealWord x={growFastX}>GROW FAST</FlipRevealWord>
+          <FlipRevealWord x={yourX} colorClassName="text-[#f3e6c8]">YOUR</FlipRevealWord>
+          <FlipRevealWord x={businessX} colorClassName="text-[#f3e6c8]" className="md:pl-[3vw]">BUSINESS,</FlipRevealWord>
+          <FlipRevealWord x={elevatedX} colorClassName="text-[#f3e6c8]" className="md:-ml-[2vw]">ELEVATED</FlipRevealWord>
+          <FlipRevealWord x={standOutX} colorClassName="text-[#f3e6c8]">STAND OUT,</FlipRevealWord>
+          <FlipRevealWord x={growFastX} colorClassName="text-[#f3e6c8]">GROW FAST</FlipRevealWord>
         </div>
       </div>
     </ScrollCoverSection>
@@ -1379,7 +1405,7 @@ function PricingCard({ index, plan }: { index: number; plan: PricingPlan }) {
   return (
     <motion.article
       {...fadeUp(0.16 + index * 0.08)}
-      className="flex min-h-[520px] flex-col rounded-lg border border-white/20 bg-white/[0.03] p-6 text-white"
+      className="flex min-h-[520px] flex-col rounded-lg border border-white/20 bg-black p-6 text-white"
       aria-label={`${plan.title} plan`}
     >
       <div className="text-center">
@@ -1492,6 +1518,10 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
                   </a>
                 )
               })}
+            </div>
+
+            <div className="mt-8 text-foreground">
+              <PhaseOneLogo footer />
             </div>
           </div>
 
