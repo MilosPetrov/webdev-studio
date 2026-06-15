@@ -124,9 +124,13 @@
     pointer-events: none;
   }
 
-  .scroll-cover-section > * {
+  .scroll-cover-section > :not(.scroll-cover-background) {
     position: relative;
     z-index: 1;
+  }
+
+  .scroll-cover-background {
+    z-index: 0;
   }
 
   .about-contact-cover {
@@ -198,6 +202,20 @@
 
   .light-circle-reveal::before {
     background: hsl(var(--background));
+  }
+
+  .circle-reveal.nav-button-active {
+    transform: scale(1.04);
+    border-color: transparent;
+    color: hsl(var(--background));
+  }
+
+  .circle-reveal.nav-button-active::before {
+    transform: translate(-50%, -50%) scale(1.45);
+  }
+
+  .circle-reveal.light-circle-reveal.nav-button-active {
+    color: hsl(var(--foreground));
   }
 
   @media (hover: hover) and (pointer: fine) {

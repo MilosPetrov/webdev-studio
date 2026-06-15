@@ -57,6 +57,58 @@ const socialLinks = [
   { label: 'TikTok', href: '#home' },
 ]
 
+function PhaseOneLogo() {
+  return (
+    <span className="inline-flex items-center gap-3" aria-hidden="true">
+      <svg
+        className="h-9 w-9 shrink-0"
+        viewBox="0 0 40 40"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect
+          x="1"
+          y="1"
+          width="38"
+          height="38"
+          rx="12"
+          stroke="currentColor"
+          strokeOpacity="0.36"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M7.5 28.5v-17h6.1c3.9 0 6.3 2.05 6.3 5.35 0 3.32-2.4 5.38-6.3 5.38h-2.1v6.27h-4Zm4-9.7h1.75c1.8 0 2.72-.64 2.72-1.95 0-1.3-.92-1.93-2.72-1.93H11.5v3.88Z"
+          fill="currentColor"
+        />
+        <line
+          x1="20.8"
+          y1="29"
+          x2="25.2"
+          y2="11"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <circle
+          cx="30.5"
+          cy="20"
+          r="7.5"
+          stroke="currentColor"
+          strokeWidth="3"
+        />
+      </svg>
+      <span className="flex flex-col uppercase leading-none">
+        <span className="text-[0.82rem] font-semibold tracking-[0.15em] md:text-[0.95rem]">
+          Phase One
+        </span>
+        <span className="mt-1 text-[0.58rem] font-medium tracking-[0.34em] opacity-65 md:text-[0.62rem]">
+          Digital
+        </span>
+      </span>
+    </span>
+  )
+}
+
 const services = [
   {
     name: 'Websites',
@@ -251,7 +303,13 @@ function useIsDesktopBreakpoint() {
   return isDesktop
 }
 
-function Navbar({ isLightPage = false }: { isLightPage?: boolean }) {
+function Navbar({
+  isLightPage = false,
+  pathname,
+}: {
+  isLightPage?: boolean
+  pathname: string
+}) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMobileMenuExiting, setIsMobileMenuExiting] = useState(false)
   const [isOverDarkSection, setIsOverDarkSection] = useState(false)
@@ -388,28 +446,38 @@ function Navbar({ isLightPage = false }: { isLightPage?: boolean }) {
       }`}
     >
       <nav className="relative z-20 flex w-full items-center justify-between gap-6">
-        <a href="#home" className="flex items-center" aria-label="WebDev Studio home" onClick={scrollHome}>
-          <span
-            className={`text-lg font-semibold uppercase tracking-[0.08em] transition-colors md:text-xl ${
-              isMobileMenuVisible ? 'text-black lg:text-white' : useLightNav ? 'text-black' : 'text-white'
-            }`}
-          >
-            WebDev Studio
+        <a
+          href="#home"
+          className={`flex items-center rounded-md transition-[color,opacity] duration-300 ${
+            useLightNav
+              ? 'text-black hover:opacity-[0.55]'
+              : 'text-white hover:opacity-[0.65]'
+          }`}
+          aria-label="Phase One Digital home"
+          onClick={scrollHome}
+        >
+          <span className={isMobileMenuVisible ? 'text-black lg:text-white' : 'text-current'}>
+            <PhaseOneLogo />
           </span>
         </a>
 
         <div className="relative hidden items-center gap-3 rounded-full px-2 py-2 text-[18px] lg:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className={`circle-reveal nav-button relative z-10 rounded-full px-5 py-2.5 font-medium transition duration-300 ${
-                useLightNav ? 'light-circle-reveal text-black' : 'text-white'
-              }`}
-            >
-              <span>{link.label}</span>
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href
+
+            return (
+              <a
+                key={link.label}
+                href={link.href}
+                aria-current={isActive ? 'page' : undefined}
+                className={`circle-reveal nav-button relative z-10 rounded-full px-5 py-2.5 font-medium transition duration-300 ${
+                  useLightNav ? 'light-circle-reveal text-black' : 'text-white'
+                } ${isActive ? 'nav-button-active' : ''}`}
+              >
+                <span>{link.label}</span>
+              </a>
+            )
+          })}
         </div>
 
         <button
@@ -446,16 +514,23 @@ function Navbar({ isLightPage = false }: { isLightPage?: boolean }) {
             }}
           >
             <div className="relative h-[100svh] bg-white pt-24">
-              {mobileNavLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="flex h-[90px] items-center justify-center border-b border-black/20 px-6 text-center text-[50px] font-medium leading-none tracking-normal text-black"
-                  onClick={closeMobileMenu}
-                >
-                  {link.label}
-                </a>
-              ))}
+              {mobileNavLinks.map((link) => {
+                const isActive = pathname === link.href
+
+                return (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`flex h-[90px] items-center justify-center border-b border-black/20 px-6 text-center text-[50px] font-medium leading-none tracking-normal transition-colors duration-300 ${
+                      isActive ? 'bg-black text-white' : 'text-black'
+                    }`}
+                    onClick={closeMobileMenu}
+                  >
+                    {link.label}
+                  </a>
+                )
+              })}
               <div className="mt-10 flex items-center justify-center gap-4">
                 {socialLinks.map((social) => {
                   const Icon = social.icon
@@ -823,19 +898,6 @@ function UnderlineField({
   )
 }
 
-function StatementVideoRibbon() {
-  return (
-    <motion.div
-      {...fadeUp(0.08)}
-      className="relative my-5 h-[200px] max-w-none overflow-hidden bg-black md:my-8"
-      style={{ marginLeft: 'calc(50% - 50vw)', width: '100vw' }}
-    >
-      <HlsBackgroundVideo src={ctaStream} className="absolute inset-0 z-0 h-full w-full object-cover object-center" />
-      <div className="absolute inset-0 z-[1] bg-background/15" />
-    </motion.div>
-  )
-}
-
 function CoverStatementSection() {
   const statementRef = useRef<HTMLDivElement>(null)
   const isDesktop = useIsDesktopBreakpoint()
@@ -854,13 +916,24 @@ function CoverStatementSection() {
 
   return (
     <ScrollCoverSection>
-      <div ref={statementRef} className="mx-auto flex min-h-[86svh] max-w-[92rem] flex-col justify-start pt-4 md:min-h-[115svh] md:pt-0">
+      <div className="scroll-cover-background pointer-events-none absolute inset-0 overflow-hidden bg-black">
+        <HlsBackgroundVideo
+          src={ctaStream}
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/65" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/60" />
+      </div>
+
+      <div
+        ref={statementRef}
+        className="relative z-10 mx-auto flex min-h-[86svh] max-w-[92rem] flex-col justify-start pt-4 md:min-h-[115svh] md:pt-0"
+      >
         <h2 className="sr-only">Your Business, Elevated, Stand Out, Grow Fast</h2>
         <div aria-hidden="true" className="space-y-2 md:space-y-3">
           <FlipRevealWord x={yourX}>YOUR</FlipRevealWord>
           <FlipRevealWord x={businessX} className="md:pl-[3vw]">BUSINESS,</FlipRevealWord>
           <FlipRevealWord x={elevatedX} className="md:-ml-[2vw]">ELEVATED</FlipRevealWord>
-          <StatementVideoRibbon />
           <FlipRevealWord x={standOutX}>STAND OUT,</FlipRevealWord>
           <FlipRevealWord x={growFastX}>GROW FAST</FlipRevealWord>
         </div>
@@ -1400,19 +1473,19 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
               <span className="block font-serif italic">Together</span>
             </h2>
             <a
-              href="mailto:hello@webdevstudio.co"
-              className="group mt-10 inline-flex items-center gap-4 text-base font-medium transition-transform duration-300 md:hover:translate-x-2"
+              href="mailto:hello@phaseonedigital.co"
+              className="circle-reveal group/footer-contact mt-10 inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/40 bg-black px-6 text-sm font-semibold text-white transition duration-300"
             >
-              Get in touch
-              <span className="circle-reveal relative inline-flex h-[55px] w-[55px] items-center justify-center overflow-hidden rounded-full border border-white/40 bg-black transition duration-300">
-                <ArrowRight className="h-5 w-5 transition duration-200 md:group-hover:translate-x-5 md:group-hover:opacity-0" />
-                <ArrowRight className="absolute h-5 w-5 -translate-x-5 text-background opacity-0 transition duration-200 md:group-hover:translate-x-0 md:group-hover:opacity-100" />
+              <span>Get in touch</span>
+              <span className="relative inline-flex h-4 w-4 items-center justify-center overflow-hidden">
+                <ArrowRight className="h-4 w-4 transition duration-200 md:group-hover/footer-contact:translate-x-5 md:group-hover/footer-contact:opacity-0" aria-hidden="true" />
+                <ArrowRight className="absolute h-4 w-4 -translate-x-5 text-background opacity-0 transition duration-200 md:group-hover/footer-contact:translate-x-0 md:group-hover/footer-contact:opacity-100" aria-hidden="true" />
               </span>
             </a>
 
             <div className="mt-12 space-y-3 text-lg text-foreground md:mt-16 md:text-xl">
-              <a href="mailto:hello@webdevstudio.co" className="group/contact relative block w-fit">
-                hello@webdevstudio.co
+              <a href="mailto:hello@phaseonedigital.co" className="group/contact relative block w-fit">
+                hello@phaseonedigital.co
                 <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 md:group-hover/contact:scale-x-100" />
               </a>
               <a href="tel:+14155501984" className="group/contact relative block w-fit">
@@ -1456,7 +1529,7 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
         </div>
 
         <div className="flex flex-col gap-5 border-t border-border/30 pt-8 text-sm text-muted-foreground md:flex-row md:items-end md:justify-between">
-          <p>&copy; 2026 WebDev Studio. All rights reserved.</p>
+          <p>&copy; 2026 Phase One Digital. All rights reserved.</p>
           <div className="flex gap-6">
             {[
               { label: 'Privacy', href: '#home' },
@@ -1968,10 +2041,10 @@ function ContactPage() {
               Email
             </p>
             <a
-              href="mailto:hello@webdevstudio.co"
+              href="mailto:hello@phaseonedigital.co"
               className="group/contact relative mt-4 inline-block w-fit text-lg text-white md:text-2xl"
             >
-              hello@webdevstudio.co
+              hello@phaseonedigital.co
               <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 md:group-hover/contact:scale-x-100" />
             </a>
           </div>
@@ -2022,7 +2095,10 @@ function App() {
       <HashScroller />
       {/* Keep page content above the sticky footer until the footer reveal zone. */}
       <div ref={pageContentRef} className="relative z-10 bg-background">
-        <Navbar isLightPage={isAboutPage || isWorksPage || isContactPage} />
+        <Navbar
+          isLightPage={isAboutPage || isWorksPage || isContactPage}
+          pathname={pathname}
+        />
         {isWorksPage ? (
           <WorksPage />
         ) : isAboutPage ? (
