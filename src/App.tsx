@@ -59,51 +59,30 @@ const socialLinks = [
 
 function PhaseOneLogo() {
   return (
-    <span className="inline-flex items-center gap-3" aria-hidden="true">
+    <span className="inline-flex items-center gap-3.5" aria-hidden="true">
       <svg
-        className="h-9 w-9 shrink-0"
-        viewBox="0 0 40 40"
+        className="h-10 w-10 shrink-0"
+        viewBox="0 0 48 48"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <rect
-          x="1"
-          y="1"
-          width="38"
-          height="38"
-          rx="12"
-          stroke="currentColor"
-          strokeOpacity="0.36"
-          strokeWidth="1.5"
-        />
         <path
-          d="M7.5 28.5v-17h6.1c3.9 0 6.3 2.05 6.3 5.35 0 3.32-2.4 5.38-6.3 5.38h-2.1v6.27h-4Zm4-9.7h1.75c1.8 0 2.72-.64 2.72-1.95 0-1.3-.92-1.93-2.72-1.93H11.5v3.88Z"
+          d="M7 21.5 20.5 7H29c10.55 0 18 7.3 18 17.7 0 9.15-5.65 15.75-13.7 17.2v-8.05c4.15-1.25 6.7-4.55 6.7-9.15C40 18.45 35.7 14 29 14h-5.55L13.5 24.7H7v-3.2Z"
           fill="currentColor"
         />
-        <line
-          x1="20.8"
-          y1="29"
-          x2="25.2"
-          y2="11"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
+        <path
+          d="m16.5 28.1 13.8-9.35V45h-7.1V28.1h-6.7Z"
+          fill="currentColor"
         />
-        <circle
-          cx="30.5"
-          cy="20"
-          r="7.5"
-          stroke="currentColor"
-          strokeWidth="3"
-        />
+        <g fill="currentColor" opacity="0.58">
+          <path d="M6 41.5h2.3V45H6z" />
+          <path d="M10.4 38.5h2.3V45h-2.3z" />
+          <path d="M14.8 35h2.3v10h-2.3z" />
+          <path d="M19.2 31h2.3v14h-2.3z" />
+        </g>
       </svg>
-      <span className="flex flex-col uppercase leading-none">
-        <span className="text-[0.82rem] font-semibold tracking-[0.15em] md:text-[0.95rem]">
-          Phase One
-        </span>
-        <span className="mt-1 text-[0.58rem] font-medium tracking-[0.34em] opacity-65 md:text-[0.62rem]">
-          Digital
-        </span>
+      <span className="text-[0.82rem] font-medium uppercase leading-none tracking-[0.22em] md:text-[0.95rem]">
+        Phase One
       </span>
     </span>
   )
