@@ -721,11 +721,105 @@ function AboutFlipRevealWord({
 }) {
   return (
     <TiltFlipRevealLine
-      className={`whitespace-nowrap py-[0.04em] text-left text-[clamp(3rem,13vw,6rem)] font-medium uppercase leading-[1] tracking-[-0.035em] text-black md:text-[clamp(5rem,10vw,10rem)] md:leading-[0.95] md:tracking-[-0.075em] ${className ?? ''}`}
+      className={`whitespace-nowrap py-[0.04em] text-left text-[clamp(3rem,13vw,6rem)] font-medium uppercase leading-[1] tracking-[-0.035em] text-black md:text-[180px] md:leading-[0.95] md:tracking-[-0.075em] ${className ?? ''}`}
       x={x}
     >
       {children}
     </TiltFlipRevealLine>
+  )
+}
+
+function AboutFlipRevealPair({
+  rows,
+}: {
+  rows: Array<{ text: string; x?: MotionValue<number> }>
+}) {
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.82, margin: '0px 0px -8% 0px' }}
+      className="space-y-2 md:space-y-3"
+    >
+      {rows.map((row) => (
+        <motion.span
+          key={row.text}
+          className="block perspective-[1400px] whitespace-nowrap py-[0.04em] text-left text-[clamp(3rem,13vw,6rem)] font-medium uppercase leading-[1] tracking-[-0.035em] text-black md:text-[180px] md:leading-[0.95] md:tracking-[-0.075em]"
+          style={{
+            perspective: 1400,
+            perspectiveOrigin: '50% 60%',
+            x: row.x,
+          }}
+        >
+          <motion.span
+            variants={{
+              hidden: { opacity: 0, rotateX: -58, rotateY: -3, rotateZ: 0.35 },
+              show: { opacity: 1, rotateX: 0, rotateY: 0, rotateZ: 0 },
+            }}
+            transition={{
+              duration: 2.25,
+              delay: 0,
+              ease: [0.2, 0.86, 0.2, 1],
+            }}
+            style={{
+              backfaceVisibility: 'hidden',
+              transformOrigin: '88% 100%',
+              transformStyle: 'preserve-3d',
+              willChange: 'transform, opacity',
+              WebkitBackfaceVisibility: 'hidden',
+            }}
+            className="inline-block transform-gpu"
+          >
+            {row.text}
+          </motion.span>
+        </motion.span>
+      ))}
+    </motion.div>
+  )
+}
+
+function UnderlineField({
+  className = '',
+  id,
+  multiline = false,
+  name,
+  placeholder,
+  type = 'text',
+}: {
+  className?: string
+  id: string
+  multiline?: boolean
+  name: string
+  placeholder: string
+  type?: 'email' | 'text'
+}) {
+  const inputClassName =
+    'block w-full border-0 border-b border-white/35 bg-transparent px-0 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white/35 md:text-left'
+
+  return (
+    <div className={`group/field relative ${className}`}>
+      <label className="sr-only" htmlFor={id}>
+        {placeholder}
+      </label>
+      {multiline ? (
+        <textarea
+          id={id}
+          name={name}
+          placeholder={placeholder}
+          rows={3}
+          className={`${inputClassName} min-h-28 resize-y py-5`}
+        />
+      ) : (
+        <input
+          id={id}
+          type={type}
+          name={name}
+          placeholder={placeholder}
+          className={`${inputClassName} h-14`}
+        />
+      )}
+      <span className="pointer-events-none absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-white transition-transform duration-300 group-hover/field:scale-x-100 group-focus-within/field:scale-x-100" />
+    </div>
   )
 }
 
@@ -1545,29 +1639,23 @@ function QuestionContactSection({
             className="mx-auto mt-16 grid w-full max-w-4xl gap-x-8 gap-y-8 md:mt-24 md:grid-cols-2"
             onSubmit={(event) => event.preventDefault()}
           >
-            <label className="sr-only" htmlFor={`${id}-name`}>Name</label>
-            <input
+            <UnderlineField
               id={`${id}-name`}
-              type="text"
               name="name"
               placeholder="Name"
-              className="h-14 border-0 border-b border-white/35 bg-transparent px-0 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:text-left"
             />
-            <label className="sr-only" htmlFor={`${id}-email`}>Email</label>
-            <input
+            <UnderlineField
               id={`${id}-email`}
               type="email"
               name="email"
               placeholder="Email"
-              className="h-14 border-0 border-b border-white/35 bg-transparent px-0 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:text-left"
             />
-            <label className="sr-only" htmlFor={`${id}-message`}>Message</label>
-            <textarea
+            <UnderlineField
+              className="md:col-span-2"
               id={`${id}-message`}
+              multiline
               name="message"
               placeholder="Message"
-              rows={3}
-              className="min-h-28 resize-none border-0 border-b border-white/35 bg-transparent px-0 py-5 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:col-span-2 md:text-left"
             />
             <button
               type="submit"
@@ -1667,12 +1755,13 @@ function AboutPage() {
     offset: ['start 80%', 'end 20%'],
   })
   const offsets = isDesktop
-    ? { purpose: 34, care: -28, clarity: -38, next: 30 }
-    : { purpose: 12, care: -10, clarity: -14, next: 12 }
-  const purposeX = useTransform(scrollYProgress, [0, 1], [0, offsets.purpose])
-  const careX = useTransform(scrollYProgress, [0, 1], [0, offsets.care])
-  const clarityX = useTransform(scrollYProgress, [0, 1], [0, offsets.clarity])
-  const nextX = useTransform(scrollYProgress, [0, 1], [0, offsets.next])
+    ? { first: 92, fourth: -88, second: 14, fifth: -138, third: 122 }
+    : { first: 34, fourth: -34, second: 6, fifth: -54, third: 46 }
+  const firstX = useTransform(scrollYProgress, [0, 1], [0, offsets.first])
+  const secondX = useTransform(scrollYProgress, [0, 1], [0, offsets.second])
+  const thirdX = useTransform(scrollYProgress, [0, 1], [0, offsets.third])
+  const fourthX = useTransform(scrollYProgress, [0, 1], [0, offsets.fourth])
+  const fifthX = useTransform(scrollYProgress, [0, 1], [0, offsets.fifth])
 
   useEffect(() => {
     let animationFrame = 0
@@ -1730,11 +1819,15 @@ function AboutPage() {
             We design, optimize, and market your brand online.
           </p>
           <div aria-hidden="true" className="mx-auto w-fit max-w-full space-y-2 overflow-visible px-[0.08em] text-left md:space-y-3">
-            <AboutFlipRevealWord x={purposeX}>WE DESIGN</AboutFlipRevealWord>
-            <AboutFlipRevealWord x={careX}>WE OPTIMIZE</AboutFlipRevealWord>
-            <AboutFlipRevealWord x={clarityX}>WE MARKET</AboutFlipRevealWord>
-            <AboutFlipRevealWord x={nextX}>YOUR BRAND</AboutFlipRevealWord>
-            <AboutFlipRevealWord x={purposeX}>ONLINE</AboutFlipRevealWord>
+            <AboutFlipRevealWord x={firstX}>WE DESIGN</AboutFlipRevealWord>
+            <AboutFlipRevealWord x={secondX}>WE OPTIMIZE</AboutFlipRevealWord>
+            <AboutFlipRevealWord x={thirdX}>WE MARKET</AboutFlipRevealWord>
+            <AboutFlipRevealPair
+              rows={[
+                { text: 'YOUR BRAND', x: fourthX },
+                { text: 'ONLINE', x: fifthX },
+              ]}
+            />
           </div>
 
           <motion.div
@@ -1811,7 +1904,7 @@ function ContactPage() {
               {...fadeUp(0.08)}
               className="mx-auto max-w-2xl text-xl leading-8 text-white/80 md:text-2xl md:leading-9"
             >
-              Book a free consultation call or just type me.
+              Book a free consultation call or just type us.
               <br />
               Let&rsquo;s meet and talk about your brand.
             </motion.p>
@@ -1821,29 +1914,23 @@ function ContactPage() {
               className="mx-auto mt-12 grid w-full max-w-4xl gap-x-8 gap-y-8 md:mt-16 md:grid-cols-2"
               onSubmit={(event) => event.preventDefault()}
             >
-              <label className="sr-only" htmlFor="contact-name">Name</label>
-              <input
+              <UnderlineField
                 id="contact-name"
-                type="text"
                 name="name"
                 placeholder="Name"
-                className="h-14 border-0 border-b border-white/35 bg-transparent px-0 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:text-left"
               />
-              <label className="sr-only" htmlFor="contact-email">Email</label>
-              <input
+              <UnderlineField
                 id="contact-email"
                 type="email"
                 name="email"
                 placeholder="Email"
-                className="h-14 border-0 border-b border-white/35 bg-transparent px-0 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:text-left"
               />
-              <label className="sr-only" htmlFor="contact-message">Message</label>
-              <textarea
+              <UnderlineField
+                className="md:col-span-2"
                 id="contact-message"
+                multiline
                 name="message"
                 placeholder="Message"
-                rows={3}
-                className="min-h-28 resize-none border-0 border-b border-white/35 bg-transparent px-0 py-5 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white md:col-span-2 md:text-left"
               />
               <button
                 type="submit"
@@ -1882,9 +1969,10 @@ function ContactPage() {
             </p>
             <a
               href="mailto:hello@webdevstudio.co"
-              className="mt-4 inline-block text-lg text-white underline decoration-white/25 underline-offset-8 transition hover:decoration-white md:text-2xl"
+              className="group/contact relative mt-4 inline-block w-fit text-lg text-white md:text-2xl"
             >
               hello@webdevstudio.co
+              <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 md:group-hover/contact:scale-x-100" />
             </a>
           </div>
 
