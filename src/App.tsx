@@ -598,12 +598,13 @@ function HeroSection() {
   const heroRef = useRef<HTMLElement>(null)
   const isDesktop = useIsDesktopBreakpoint()
   const { scrollY } = useScroll()
-  const mobileHeroOffsets = { first: 34, fourth: 46, second: -34, third: -54 }
-  const desktopHeroOffsets = { first: 92, fourth: 122, second: -88, third: -138 }
+  const mobileHeroOffsets = { ampersand: 12, first: 18, fourth: 26, second: -18, third: -28 }
+  const desktopHeroOffsets = { ampersand: 0, first: 92, fourth: 122, second: -88, third: -138 }
   const heroOffsets = isDesktop ? desktopHeroOffsets : mobileHeroOffsets
   const heroScrollDistance = isDesktop ? 900 : 520
   const heroFirstX = useTransform(scrollY, [0, heroScrollDistance], [0, heroOffsets.first])
   const heroSecondX = useTransform(scrollY, [0, heroScrollDistance], [0, heroOffsets.second])
+  const heroAmpersandX = useTransform(scrollY, [0, heroScrollDistance], [0, heroOffsets.ampersand])
   const heroThirdX = useTransform(scrollY, [0, heroScrollDistance], [0, heroOffsets.third])
   const heroFourthX = useTransform(scrollY, [0, heroScrollDistance], [0, heroOffsets.fourth])
 
@@ -611,7 +612,7 @@ function HeroSection() {
     <section
       ref={heroRef}
       id="home"
-      className="sticky-hero sticky top-0 z-0 h-screen overflow-hidden bg-black px-6 text-white sm:px-10 lg:px-20"
+      className="sticky-hero sticky top-0 z-0 h-screen overflow-hidden bg-black px-5 text-white sm:px-10 lg:px-20"
     >
       <video
         className="absolute inset-0 z-0 h-full w-full object-cover"
@@ -628,7 +629,26 @@ function HeroSection() {
         <div className="flex flex-1 items-center justify-start py-12 text-left">
           <div className="w-full">
             <h1
-              className="hero-text font-melodrama-display inline-block max-w-full text-[clamp(2.65rem,11vw,5rem)] font-normal uppercase leading-[0.96] md:text-[clamp(4rem,12vw,12.5rem)] md:leading-[0.92]"
+              className="hero-text hero-text-mobile font-melodrama-display inline-block max-w-full text-[clamp(3.95rem,20.5vw,7.4rem)] font-normal uppercase leading-[0.78] md:hidden"
+            >
+              <TiltFlipRevealLine x={heroFirstX} delay={0.12} viewportAmount={0.2} className="whitespace-nowrap">
+                Creative
+              </TiltFlipRevealLine>
+              <TiltFlipRevealLine x={heroSecondX} delay={0.28} viewportAmount={0.2} className="hero-text-tight whitespace-nowrap">
+                Web <span className="accent-word">Design</span>
+              </TiltFlipRevealLine>
+              <TiltFlipRevealLine x={heroAmpersandX} delay={0.36} viewportAmount={0.2} className="hero-ampersand whitespace-nowrap">
+                &
+              </TiltFlipRevealLine>
+              <TiltFlipRevealLine x={heroThirdX} delay={0.44} viewportAmount={0.2} className="whitespace-nowrap">
+                Marketing
+              </TiltFlipRevealLine>
+              <TiltFlipRevealLine x={heroFourthX} delay={0.6} viewportAmount={0.2} className="whitespace-nowrap">
+                Studio
+              </TiltFlipRevealLine>
+            </h1>
+            <h1
+              className="hero-text font-melodrama-display hidden max-w-full font-normal uppercase md:inline-block md:text-[clamp(4rem,12vw,12.5rem)] md:leading-[0.92]"
             >
               <TiltFlipRevealLine x={heroFirstX} delay={0.12} viewportAmount={0.2} className="whitespace-nowrap">
                 Creative
@@ -1488,20 +1508,20 @@ function PricingCard({ index, plan }: { index: number; plan: PricingPlan }) {
 }
 
 function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
-  const footerContentOpacity = useTransform(revealProgress, [0.35, 0.9], [0, 1])
-  const footerContentY = useTransform(revealProgress, [0.35, 0.9], [64, 0])
+  const footerContentOpacity = useTransform(revealProgress, [0.06, 0.68], [0, 1])
+  const footerContentY = useTransform(revealProgress, [0.06, 0.68], [64, 0])
 
   return (
     <footer
-      className="sticky bottom-0 z-0 mt-16 min-h-[92svh] bg-background px-6 pb-12 pt-28 md:mt-32 md:min-h-screen md:px-12 md:pb-24 md:pt-48"
+      className="sticky bottom-0 z-0 mt-16 min-h-svh bg-background px-6 pb-10 pt-24 md:mt-32 md:min-h-screen md:px-12 md:pb-24 md:pt-48"
     >
       <motion.div
         style={{ opacity: footerContentOpacity, y: footerContentY }}
-        className="mx-auto flex min-h-[calc(92svh-8rem)] w-full max-w-6xl flex-col justify-between md:min-h-[calc(100svh-11rem)]"
+        className="mx-auto flex min-h-[calc(100svh-8.5rem)] w-full max-w-6xl flex-col justify-center md:min-h-[calc(100svh-11rem)] md:justify-between"
       >
-        <div className="grid gap-16 md:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] md:items-end">
+        <div className="grid gap-10 md:gap-16 md:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] md:items-end">
           <div>
-            <h2 className="max-w-3xl text-5xl font-medium leading-[0.92] tracking-[-1px] md:text-8xl md:leading-[0.9] lg:text-9xl">
+            <h2 className="max-w-3xl text-[4rem] font-medium leading-[0.9] tracking-[-1px] md:text-8xl md:leading-[0.9] lg:text-9xl">
               Let&rsquo;s work
               <span className="block">Together</span>
             </h2>
@@ -1516,7 +1536,7 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
               </span>
             </a>
 
-            <div className="mt-12 space-y-3 text-lg text-foreground md:mt-16 md:text-xl">
+            <div className="mt-10 space-y-3 text-lg text-foreground md:mt-16 md:text-xl">
               <a href="mailto:hello@phaseonedigital.co" className="group/contact relative block w-fit">
                 hello@phaseonedigital.co
                 <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 md:group-hover/contact:scale-x-100" />
@@ -1548,7 +1568,7 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
               })}
             </div>
 
-            <div className="mt-8 text-foreground">
+            <div className="mt-7 text-foreground md:mt-8">
               <PhaseOneLogo footer />
             </div>
           </div>
@@ -1562,25 +1582,6 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
               <span className="block">Suite 1200</span>
               <span className="block">San Francisco, CA 94111</span>
             </p>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-5 border-t border-border/30 pt-8 text-sm text-muted-foreground md:flex-row md:items-end md:justify-between">
-          <p>&copy; 2026 Phase One Digital. All rights reserved.</p>
-          <div className="flex gap-6">
-            {[
-              { label: 'Privacy', href: '#home' },
-              { label: 'Terms', href: '#home' },
-              { label: 'Contact', href: '#contact-us' },
-            ].map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="transition md:hover:text-foreground"
-              >
-                {link.label}
-              </a>
-            ))}
           </div>
         </div>
       </motion.div>
@@ -1679,12 +1680,15 @@ function useMorphingContactDome() {
     const updateDomeShape = () => {
       document.querySelectorAll<HTMLElement>('.about-contact-cover').forEach((cover) => {
         const viewportWidth = window.innerWidth
-        const arcOffset = Math.min(Math.max(viewportWidth * 0.34, 340), 560)
+        const isDesktopViewport = viewportWidth >= 768
+        const arcOffset = isDesktopViewport
+          ? Math.min(Math.max(viewportWidth * 0.34, 340), 560)
+          : Math.min(Math.max(viewportWidth * 0.28, 220), 340)
         const domeTop = cover.getBoundingClientRect().top - arcOffset
         const progress = Math.min(Math.max((window.innerHeight - domeTop) / (window.innerHeight - 120), 0), 1)
-        const heightMultiplier = 3.1 - progress * 0.35
-        const widthVw = 172 + progress * 18
-        const topOffset = arcOffset * (1.08 - progress * 0.08)
+        const heightMultiplier = isDesktopViewport ? 3.1 - progress * 0.35 : 2.18 - progress * 0.22
+        const widthVw = isDesktopViewport ? 172 + progress * 18 : 200 + progress * 14
+        const topOffset = arcOffset * (isDesktopViewport ? 1.08 - progress * 0.08 : 0.86 - progress * 0.07)
 
         cover.style.setProperty('--about-dome-width', `${widthVw}vw`)
         cover.style.setProperty('--about-dome-height', `${arcOffset * heightMultiplier}px`)
@@ -1847,7 +1851,7 @@ function WorksPage() {
       <div className="absolute inset-x-0 top-[450svh] z-20">
         <QuestionContactSection
           id="works-contact"
-          contentClassName="-mt-48 md:-mt-72"
+          contentClassName="-mt-16 md:-mt-72"
           coverClassName="about-contact-cover"
           headingLayout="paired"
           sectionClassName="!min-h-0 justify-start !py-0 pb-0 md:!min-h-0 md:!py-0 md:pb-0"
@@ -1884,12 +1888,15 @@ function AboutPage() {
       }
 
       const viewportWidth = window.innerWidth
-      const arcOffset = Math.min(Math.max(viewportWidth * 0.34, 340), 560)
+      const isDesktopViewport = viewportWidth >= 768
+      const arcOffset = isDesktopViewport
+        ? Math.min(Math.max(viewportWidth * 0.34, 340), 560)
+        : Math.min(Math.max(viewportWidth * 0.28, 220), 340)
       const domeTop = cover.getBoundingClientRect().top - arcOffset
       const progress = Math.min(Math.max((window.innerHeight - domeTop) / (window.innerHeight - 120), 0), 1)
-      const heightMultiplier = 3.1 - progress * 0.35
-      const widthVw = 172 + progress * 18
-      const topOffset = arcOffset * (1.08 - progress * 0.08)
+      const heightMultiplier = isDesktopViewport ? 3.1 - progress * 0.35 : 2.18 - progress * 0.22
+      const widthVw = isDesktopViewport ? 172 + progress * 18 : 200 + progress * 14
+      const topOffset = arcOffset * (isDesktopViewport ? 1.08 - progress * 0.08 : 0.86 - progress * 0.07)
 
       cover.style.setProperty('--about-dome-width', `${widthVw}vw`)
       cover.style.setProperty('--about-dome-height', `${arcOffset * heightMultiplier}px`)
@@ -1986,7 +1993,7 @@ function AboutPage() {
 
       <QuestionContactSection
         id="about-contact"
-        contentClassName="-mt-48 md:-mt-72"
+        contentClassName="-mt-16 md:-mt-72"
         coverClassName="about-contact-cover"
         headingLayout="paired"
         sectionClassName="!min-h-0 justify-start !py-0 pb-0 md:!min-h-0 md:!py-0 md:pb-0"
