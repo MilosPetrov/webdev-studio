@@ -11,6 +11,14 @@
     font-weight: 200 700;
   }
 
+  @font-face {
+    font-family: 'Melodrama Display';
+    src: url('./assets/fonts/melodrama/Melodrama-Variable.woff2') format('woff2');
+    font-display: swap;
+    font-style: normal;
+    font-weight: 300 700;
+  }
+
   :root {
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
@@ -22,7 +30,7 @@
     --secondary-foreground: 0 0% 85%;
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
-    --accent: 170 15% 45%;
+    --accent: 175 28% 61%;
     --accent-foreground: 0 0% 100%;
     --border: 0 0% 20%;
     --input: 0 0% 18%;
@@ -97,8 +105,22 @@
   }
 
   .hero-text {
-    color: #f3e6c8;
+    color: hsl(var(--foreground));
     text-shadow: 0 2px 18px rgba(0, 0, 0, 0.28);
+  }
+
+  .font-melodrama-display,
+  .font-melodrama-display * {
+    font-family: 'Melodrama Display', Roundo, Inter, sans-serif;
+    font-weight: 600 !important;
+    letter-spacing: 0.035em !important;
+  }
+
+  @media (min-width: 768px) {
+    .statement-display-row {
+      font-size: 230px !important;
+      line-height: 0.88 !important;
+    }
   }
 
   /* Higher z-index and solid background let this section physically cover the hero. */
@@ -168,6 +190,25 @@
   .contact-hero-dome > * {
     position: relative;
     z-index: 1;
+  }
+
+  .accent-text {
+    color: hsl(var(--accent));
+  }
+
+  .accent-word {
+    color: hsl(var(--accent));
+  }
+
+  .accent-badge {
+    border-color: hsl(var(--accent) / 0.55);
+    background: hsl(var(--accent) / 0.12);
+    color: hsl(var(--accent));
+  }
+
+  .accent-work-media {
+    border: 1px solid transparent;
+    transition: border-color 0.5s ease, transform 0.5s ease;
   }
 
   @media (min-width: 768px) {
@@ -245,6 +286,14 @@
 
     .work-grid:hover .work-card:not(:hover) {
       filter: grayscale(30%) brightness(0.8);
+    }
+
+    .work-card:hover .accent-work-media {
+      border-color: hsl(var(--accent) / 0.85);
+    }
+
+    .accent-arrow-group:hover .accent-arrow-target {
+      color: hsl(var(--accent));
     }
   }
 

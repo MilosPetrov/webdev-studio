@@ -305,13 +305,25 @@ function Navbar({
     setIsMobileMenuOpen(false)
   }, [isMobileMenuOpen])
 
-  const scrollToDocumentTop = () => {
+  const refreshToPath = (path: string) => {
+    closeMobileMenu()
+    window.location.href = path
+  }
+
+  const refreshCurrentNavPage = (event: MouseEvent<HTMLAnchorElement>, path: string) => {
+    event.preventDefault()
+    refreshToPath(path)
+  }
+
+  const scrollContactToTop = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    closeMobileMenu()
+
     if (smoothScrollInstance) {
       smoothScrollInstance.scrollTo(0, {
-        duration: 1.8,
+        duration: 1.1,
         force: true,
         lock: true,
-        onComplete: () => window.scrollTo(0, 0),
       })
       return
     }
@@ -319,31 +331,13 @@ function Navbar({
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const scheduleScrollToDocumentTop = () => {
-    // Run after the mobile menu's scroll-lock cleanup has restored its saved position.
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(scrollToDocumentTop)
-    })
-  }
-
-  const scrollHome = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault()
-    closeMobileMenu()
-
-    if (window.location.pathname !== '/') {
-      window.location.href = '/'
+  const handleActiveNavClick = (event: MouseEvent<HTMLAnchorElement>, path: string) => {
+    if (path === '/contact') {
+      scrollContactToTop(event)
       return
     }
 
-    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
-    scheduleScrollToDocumentTop()
-  }
-
-  const handleActiveNavClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault()
-    closeMobileMenu()
-    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
-    scheduleScrollToDocumentTop()
+    refreshCurrentNavPage(event, path)
   }
 
   useEffect(() => {
@@ -440,14 +434,14 @@ function Navbar({
     >
       <nav className="relative z-20 flex w-full items-center justify-between gap-6">
         <a
-          href="#home"
+          href="/"
           className={`flex items-center rounded-md transition-[color,opacity] duration-300 ${
             useLightNav
               ? 'text-black hover:opacity-[0.55]'
               : 'text-white hover:opacity-[0.65]'
           }`}
           aria-label="Phase One Digital home"
-          onClick={scrollHome}
+          onClick={(event) => refreshCurrentNavPage(event, '/')}
         >
           <span className={isMobileMenuVisible ? 'text-black lg:text-white' : 'text-current'}>
             <span className="text-[1.15rem] font-normal uppercase leading-none tracking-[-0.16px] md:text-[1.35rem]">
@@ -465,7 +459,7 @@ function Navbar({
                 key={link.label}
                 href={link.href}
                 aria-current={isActive ? 'page' : undefined}
-                onClick={isActive ? handleActiveNavClick : undefined}
+                onClick={isActive ? (event) => handleActiveNavClick(event, link.href) : undefined}
                 className={`circle-reveal nav-button relative z-10 rounded-full px-5 py-2.5 font-medium transition duration-300 ${
                   useLightNav ? 'light-circle-reveal text-black' : 'text-white'
                 } ${isActive ? 'nav-button-active' : ''}`}
@@ -523,7 +517,7 @@ function Navbar({
                     }`}
                     onClick={(event) => {
                       if (isActive) {
-                        handleActiveNavClick(event)
+                        handleActiveNavClick(event, link.href)
                         return
                       }
 
@@ -634,13 +628,13 @@ function HeroSection() {
         <div className="flex flex-1 items-center justify-start py-12 text-left">
           <div className="w-full">
             <h1
-              className="hero-text inline-block max-w-full text-[clamp(2.65rem,11vw,5rem)] font-medium uppercase leading-[0.96] tracking-[-0.045em] md:text-[clamp(4rem,12vw,12.5rem)] md:leading-[0.92] md:tracking-[-0.05em]"
+              className="hero-text font-melodrama-display inline-block max-w-full text-[clamp(2.65rem,11vw,5rem)] font-normal uppercase leading-[0.96] md:text-[clamp(4rem,12vw,12.5rem)] md:leading-[0.92]"
             >
               <TiltFlipRevealLine x={heroFirstX} delay={0.12} viewportAmount={0.2} className="whitespace-nowrap">
                 Creative
               </TiltFlipRevealLine>
               <TiltFlipRevealLine x={heroSecondX} delay={0.28} viewportAmount={0.2} className="whitespace-nowrap">
-                Web Design &
+                Web <span className="accent-word">Design</span> &
               </TiltFlipRevealLine>
               <TiltFlipRevealLine x={heroThirdX} delay={0.44} viewportAmount={0.2} className="whitespace-nowrap tracking-[-0.025em] md:tracking-[-0.03em]">
                 Marketing
@@ -674,7 +668,7 @@ function TiltFlipRevealLine({
   viewportAmount = 0.94,
   x,
 }: {
-  children: string
+  children: ReactNode
   className?: string
   delay?: number
   viewportAmount?: number
@@ -727,14 +721,14 @@ function FlipRevealWord({
   colorClassName = 'text-white',
   x,
 }: {
-  children: string
+  children: ReactNode
   className?: string
   colorClassName?: string
   x?: MotionValue<number>
 }) {
   return (
     <TiltFlipRevealLine
-      className={`whitespace-nowrap text-left text-[clamp(2.8rem,13vw,3.25rem)] font-medium uppercase leading-[0.95] tracking-[-0.035em] md:text-[clamp(4rem,12vw,200px)] md:leading-[0.88] md:tracking-[-0.075em] ${colorClassName} ${className ?? ''}`}
+      className={`whitespace-nowrap text-left text-[clamp(2.8rem,13vw,3.25rem)] font-medium uppercase leading-[0.95] tracking-[-0.035em] md:text-[clamp(5rem,13.8vw,200px)] md:leading-[0.88] md:tracking-[-0.075em] ${colorClassName} ${className ?? ''}`}
       x={x}
     >
       {children}
@@ -742,7 +736,7 @@ function FlipRevealWord({
   )
 }
 
-function ContactFlipPair({ lines }: { lines: [string, string] }) {
+function ContactFlipPair({ className = '', lines }: { className?: string; lines: [string, string] }) {
   return (
     <motion.div
       initial="hidden"
@@ -757,7 +751,7 @@ function ContactFlipPair({ lines }: { lines: [string, string] }) {
       {lines.map((line) => (
         <span
           key={line}
-          className="block perspective-[1400px] whitespace-nowrap text-left text-[clamp(2.8rem,13vw,3.25rem)] font-medium uppercase leading-[0.95] tracking-[-0.035em] text-white md:text-[clamp(4rem,12vw,200px)] md:leading-[0.88] md:tracking-[-0.075em]"
+          className={`block perspective-[1400px] whitespace-nowrap text-left text-[clamp(2.8rem,13vw,3.25rem)] font-medium uppercase leading-[0.95] tracking-[-0.035em] text-white md:text-[clamp(4rem,12vw,200px)] md:leading-[0.88] md:tracking-[-0.075em] ${className}`}
           style={{
             perspective: 1400,
             perspectiveOrigin: '50% 60%',
@@ -795,13 +789,13 @@ function AboutFlipRevealWord({
   className,
   x,
 }: {
-  children: string
+  children: ReactNode
   className?: string
   x?: MotionValue<number>
 }) {
   return (
     <TiltFlipRevealLine
-      className={`whitespace-nowrap py-[0.04em] text-left text-[clamp(3rem,13vw,6rem)] font-medium uppercase leading-[1] tracking-[-0.035em] text-black md:text-[180px] md:leading-[0.95] md:tracking-[-0.075em] ${className ?? ''}`}
+      className={`whitespace-nowrap py-[0.04em] text-left text-[clamp(3rem,13vw,6rem)] font-medium uppercase leading-[1] tracking-[-0.035em] text-black md:text-[200px] md:leading-[0.95] md:tracking-[-0.075em] ${className ?? ''}`}
       x={x}
     >
       {children}
@@ -812,7 +806,7 @@ function AboutFlipRevealWord({
 function AboutFlipRevealPair({
   rows,
 }: {
-  rows: Array<{ text: string; x?: MotionValue<number> }>
+  rows: Array<{ className?: string; text: string; x?: MotionValue<number> }>
 }) {
   return (
     <motion.div
@@ -824,7 +818,7 @@ function AboutFlipRevealPair({
       {rows.map((row) => (
         <motion.span
           key={row.text}
-          className="block perspective-[1400px] whitespace-nowrap py-[0.04em] text-left text-[clamp(3rem,13vw,6rem)] font-medium uppercase leading-[1] tracking-[-0.035em] text-black md:text-[180px] md:leading-[0.95] md:tracking-[-0.075em]"
+          className={`block perspective-[1400px] whitespace-nowrap py-[0.04em] text-left text-[clamp(3rem,13vw,6rem)] font-medium uppercase leading-[1] tracking-[-0.035em] text-black md:text-[200px] md:leading-[0.95] md:tracking-[-0.075em] ${row.className ?? ''}`}
           style={{
             perspective: 1400,
             perspectiveOrigin: '50% 60%',
@@ -926,8 +920,8 @@ function CoverStatementSection() {
           src={ctaStream}
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-black/65" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/60" />
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/45" />
       </div>
 
       <div
@@ -936,11 +930,11 @@ function CoverStatementSection() {
       >
         <h2 className="sr-only">Your Business, Elevated, Stand Out, Grow Fast</h2>
         <div aria-hidden="true" className="space-y-2 md:space-y-3">
-          <FlipRevealWord x={yourX} colorClassName="text-[#f3e6c8]">YOUR</FlipRevealWord>
-          <FlipRevealWord x={businessX} colorClassName="text-[#f3e6c8]" className="md:pl-[3vw]">BUSINESS,</FlipRevealWord>
-          <FlipRevealWord x={elevatedX} colorClassName="text-[#f3e6c8]" className="md:-ml-[2vw]">ELEVATED</FlipRevealWord>
-          <FlipRevealWord x={standOutX} colorClassName="text-[#f3e6c8]">STAND OUT,</FlipRevealWord>
-          <FlipRevealWord x={growFastX} colorClassName="text-[#f3e6c8]">GROW FAST</FlipRevealWord>
+          <FlipRevealWord x={yourX} className="statement-display-row">YOUR</FlipRevealWord>
+          <FlipRevealWord x={businessX} className="statement-display-row md:pl-[3vw]">BUSINESS</FlipRevealWord>
+          <FlipRevealWord x={elevatedX} className="statement-display-row font-melodrama-display font-normal md:-ml-[2vw]">ELEVATED</FlipRevealWord>
+          <FlipRevealWord x={standOutX} className="statement-display-row pt-16 md:pt-32">STAND OUT</FlipRevealWord>
+          <FlipRevealWord x={growFastX} className="statement-display-row font-melodrama-display font-normal">GROW FAST</FlipRevealWord>
         </div>
       </div>
     </ScrollCoverSection>
@@ -954,7 +948,7 @@ function ServicesSection() {
         {...fadeUp(0)}
         className="mx-auto max-w-5xl text-4xl font-medium leading-[1.04] tracking-[-1px] md:text-7xl md:leading-[1.02] md:tracking-[-2px] lg:text-8xl"
       >
-        Websites should look sharp and <span className="font-serif italic">perform.</span>
+        Websites should look sharp and <span>perform.</span>
       </motion.h2>
       <motion.p
         {...fadeUp(0.12)}
@@ -1003,7 +997,7 @@ function HeroScrollScene() {
   )
 }
 
-function FeaturedWorkSection() {
+function FeaturedWorkSection({ isLightActive = false }: { isLightActive?: boolean }) {
   return (
     <section id="work" className="px-6 py-24 md:px-12 md:py-44">
       <div className="mx-auto w-full">
@@ -1015,7 +1009,7 @@ function FeaturedWorkSection() {
         >
           <span className="md:hidden">We&apos;re a digital-first design agency where creativity meets technology.</span>
           <span className="hidden md:inline">
-            <AnimatedLetterText letterStep={0.022} letterDuration={0.22}>
+            <AnimatedLetterText letterStep={0.012} letterDuration={0.16}>
               We're a digital-first design agency where creativity meets technology.
             </AnimatedLetterText>
           </span>
@@ -1023,7 +1017,7 @@ function FeaturedWorkSection() {
 
         <motion.p
           {...fadeUp(0.04)}
-          className="mt-16 text-left text-xs font-medium uppercase tracking-[2.5px] text-muted-foreground md:mt-32 md:text-sm"
+          className="accent-text mt-16 text-left text-xs font-medium uppercase tracking-[2.5px] md:mt-32 md:text-sm"
         >
           Recent Work
         </motion.p>
@@ -1037,7 +1031,7 @@ function FeaturedWorkSection() {
               className="work-card group block transition duration-300"
               aria-label={`${work.title} project placeholder`}
             >
-              <div className="relative aspect-square overflow-hidden rounded-2xl bg-card md:rounded-3xl">
+              <div className="accent-work-media relative aspect-square overflow-hidden rounded-2xl bg-card md:rounded-3xl">
                 <img
                   src={work.image}
                   alt=""
@@ -1045,8 +1039,12 @@ function FeaturedWorkSection() {
                   loading="lazy"
                 />
               </div>
-              <h3 className="mt-4 text-base font-semibold text-white md:text-lg">{work.title}</h3>
-              <p className="mt-1 text-xs uppercase tracking-[2px] text-muted-foreground">{work.type}</p>
+              <h3 className={`mt-4 text-base font-semibold transition-colors duration-700 md:text-lg ${
+                isLightActive ? 'text-black' : 'text-white'
+              }`}>{work.title}</h3>
+              <p className={`mt-1 text-xs uppercase tracking-[2px] transition-colors duration-700 ${
+                isLightActive ? 'text-black/55' : 'accent-text opacity-80'
+              }`}>{work.type}</p>
             </motion.a>
           ))}
         </div>
@@ -1157,16 +1155,20 @@ function AnimatedLetterLine({
   )
 }
 
-function MissionSection() {
+function MissionSection({ isLightActive = false }: { isLightActive?: boolean }) {
   return (
     <section
       id="about"
-      className="relative min-h-[82svh] overflow-hidden px-6 py-20 md:min-h-[150svh] md:px-12 md:py-44"
+      className={`mission-light-section relative min-h-[82svh] overflow-hidden px-6 py-20 transition-colors duration-700 md:min-h-[150svh] md:px-12 md:py-44 ${
+        isLightActive ? 'bg-white text-black' : 'bg-background text-white'
+      }`}
     >
       <h2 className="sr-only">Shape A Better Future</h2>
       <motion.p
         {...fadeUp(0.08)}
-        className="relative z-10 max-w-[22rem] text-base leading-7 text-white/75 md:absolute md:left-12 md:top-16 md:max-w-[27rem] md:text-xl md:leading-8"
+        className={`relative z-10 max-w-[23rem] text-lg font-medium leading-8 tracking-[-0.01em] transition-colors duration-700 md:absolute md:left-12 md:top-16 md:max-w-[30rem] md:text-[1.35rem] md:leading-9 ${
+          isLightActive ? 'text-black/85' : 'text-white/85'
+        }`}
       >
         Since our inception, we&rsquo;ve been committed to using our creativity and
         resources to shape a better future for all. That means creating positive
@@ -1174,31 +1176,41 @@ function MissionSection() {
       </motion.p>
       <motion.div
         {...fadeUp(0.18)}
-        className="relative z-10 mt-[58svh] max-w-[23rem] md:absolute md:left-12 md:top-[61%] md:mt-0 md:max-w-[31rem]"
+        className="relative z-10 mt-[58svh] max-w-[24rem] md:absolute md:left-12 md:top-[61%] md:mt-0 md:max-w-[34rem]"
       >
-        <p className="text-base leading-7 text-white/75 md:text-xl md:leading-8">
+        <p className={`text-lg font-medium leading-8 tracking-[-0.01em] transition-colors duration-700 md:text-[1.35rem] md:leading-9 ${
+          isLightActive ? 'text-black/85' : 'text-white/85'
+        }`}>
           We are united by a strong set of values that drive us in all parts of our
           work. We put people first, we pursue excellence in all we do, we embrace
           a growth mindset, and we are dedicated to applying truth in action.
         </p>
         <a
-          href="#process"
-          className="circle-reveal group/about mt-7 inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/40 bg-black px-6 text-sm font-semibold text-white transition duration-300"
+          href="/about"
+          className={`circle-reveal group/about mt-8 inline-flex h-14 items-center justify-center gap-3 rounded-full px-8 text-base font-semibold transition duration-300 md:h-16 md:px-10 md:text-lg ${
+            isLightActive
+              ? 'light-circle-reveal border border-black/40 bg-white text-black'
+              : 'border border-white/40 bg-black text-white'
+          }`}
         >
           <span>Learn more about us</span>
-          <span className="relative inline-flex h-4 w-4 items-center justify-center overflow-hidden">
-            <ArrowRight className="h-4 w-4 transition duration-200 md:group-hover/about:translate-x-5 md:group-hover/about:opacity-0" aria-hidden="true" />
-            <ArrowRight className="absolute h-4 w-4 -translate-x-5 text-background opacity-0 transition duration-200 md:group-hover/about:translate-x-0 md:group-hover/about:opacity-100" aria-hidden="true" />
+          <span className="relative inline-flex h-5 w-5 items-center justify-center overflow-hidden">
+            <ArrowRight className="h-5 w-5 transition duration-200 md:group-hover/about:translate-x-5 md:group-hover/about:opacity-0" aria-hidden="true" />
+            <ArrowRight className={`absolute h-5 w-5 -translate-x-5 opacity-0 transition duration-200 md:group-hover/about:translate-x-0 md:group-hover/about:opacity-100 ${
+              isLightActive ? 'text-foreground' : 'text-background'
+            }`} aria-hidden="true" />
           </span>
         </a>
       </motion.div>
       <motion.div
         aria-hidden="true"
-        className="absolute inset-0 text-white"
+        className={`absolute inset-0 transition-colors duration-700 ${
+          isLightActive ? 'text-neutral-400' : 'text-white'
+        }`}
       >
         <AnimatedLetterLine
           delay={0}
-          className="absolute -right-8 top-[18%] text-right font-serif text-[7.6rem] leading-[0.78] tracking-normal md:right-[10vw] md:top-16 md:text-[clamp(9rem,31vw,25.625rem)]"
+          className="absolute -right-8 top-[18%] text-right text-[7.6rem] font-medium leading-[0.78] tracking-normal md:right-[10vw] md:top-16 md:text-[clamp(9rem,31vw,25.625rem)]"
         >
           Shape
         </AnimatedLetterLine>
@@ -1210,7 +1222,7 @@ function MissionSection() {
         </AnimatedLetterLine>
         <AnimatedLetterLine
           delay={0}
-          className="absolute -right-8 top-[63%] -translate-y-1/2 text-right font-serif text-[7.6rem] italic leading-[0.78] tracking-normal md:right-[7vw] md:top-[68%] md:text-[clamp(9rem,30vw,25rem)]"
+          className="font-melodrama-display absolute -right-8 top-[63%] -translate-y-1/2 text-right text-[7.6rem] font-normal leading-[0.78] tracking-normal md:right-[7vw] md:top-[68%] md:text-[clamp(9rem,30vw,25rem)]"
         >
           Future.
         </AnimatedLetterLine>
@@ -1219,7 +1231,7 @@ function MissionSection() {
   )
 }
 
-function SolutionSection() {
+function SolutionSection({ isLightActive = false }: { isLightActive?: boolean }) {
   const accordionItems = [
     {
       id: 'added-value',
@@ -1247,19 +1259,23 @@ function SolutionSection() {
   return (
     <section
       id="process"
-      className="px-6 py-20 md:py-44"
+      className="px-6 py-20 transition-colors duration-700 md:py-44"
     >
       <div className="mx-auto max-w-6xl text-left">
         <motion.h2
           {...fadeUp(0)}
-          className="mb-12 text-4xl font-semibold leading-tight tracking-[-0.04em] text-white md:mb-16 md:text-[2.65rem]"
+          className={`mb-12 text-4xl font-semibold leading-tight tracking-[-0.04em] transition-colors duration-700 md:mb-16 md:text-[2.65rem] ${
+            isLightActive ? 'text-black' : 'text-white'
+          }`}
         >
           Key elements of a successful website
         </motion.h2>
         <div>
           <motion.p
             {...fadeUp(0.08)}
-            className="max-w-5xl text-2xl font-light leading-[1.45] tracking-[-0.04em] text-white/80 md:text-[2rem] md:leading-[1.48]"
+            className={`max-w-5xl text-2xl font-light leading-[1.45] tracking-[-0.04em] transition-colors duration-700 md:text-[2rem] md:leading-[1.48] ${
+              isLightActive ? 'text-black/80' : 'text-white/80'
+            }`}
           >
             A good website is characterized by its high-quality design, informative
             content, optimal performance, and its ability to authentically
@@ -1267,14 +1283,18 @@ function SolutionSection() {
           </motion.p>
           <motion.p
             {...fadeUp(0.16)}
-            className="mt-14 max-w-4xl text-2xl font-light leading-[1.45] tracking-[-0.04em] text-white/80 md:mt-16 md:text-[2rem] md:leading-[1.48]"
+            className={`mt-14 max-w-4xl text-2xl font-light leading-[1.45] tracking-[-0.04em] transition-colors duration-700 md:mt-16 md:text-[2rem] md:leading-[1.48] ${
+              isLightActive ? 'text-black/80' : 'text-white/80'
+            }`}
           >
             It serves as a crucial platform for engaging potential customers while
             also providing a digital manifestation of your brand.
           </motion.p>
         </div>
 
-        <div className="mt-16 border-t border-white/35 md:mt-20">
+        <div className={`mt-16 border-t transition-colors duration-700 md:mt-20 ${
+          isLightActive ? 'border-black/25' : 'border-white/35'
+        }`}>
           {accordionItems.map((item, index) => {
             const isOpen = activeAccordionItem === item.id
 
@@ -1282,19 +1302,25 @@ function SolutionSection() {
               <motion.div
                 key={item.id}
                 {...fadeUp(index * 0.08)}
-                className="border-b border-white/20 py-10 md:py-12"
+                className={`border-b py-10 transition-colors duration-700 md:py-12 ${
+                  isLightActive ? 'border-black/15' : 'border-white/20'
+                }`}
               >
                 <button
                   type="button"
-                  className="group grid w-full grid-cols-[minmax(0,1fr)_96px] items-center gap-6 text-left md:grid-cols-[minmax(0,1fr)_190px] md:gap-8"
+                  className="accent-arrow-group group grid w-full grid-cols-[minmax(0,1fr)_96px] items-center gap-6 text-left md:grid-cols-[minmax(0,1fr)_190px] md:gap-8"
                   aria-expanded={isOpen}
                   onClick={() => setActiveAccordionItem((activeItem) => (activeItem === item.id ? null : item.id))}
                 >
-                  <span className="text-5xl uppercase leading-none tracking-[-0.04em] text-white md:text-[4.7rem]">
+                  <span className={`text-5xl uppercase leading-none tracking-[-0.04em] transition-colors duration-700 md:text-[4.7rem] ${
+                    isLightActive ? 'text-black' : 'text-white'
+                  }`}>
                     {item.title}
                   </span>
                   <span
-                    className={`flex h-24 w-32 items-center justify-center justify-self-end text-white transition duration-500 md:h-40 md:w-52 ${
+                    className={`accent-arrow-target flex h-24 w-32 items-center justify-center justify-self-end transition duration-500 md:h-40 md:w-52 ${
+                      isLightActive ? 'text-black' : 'text-white'
+                    } ${
                       isOpen ? 'rotate-45' : '-rotate-45'
                     }`}
                     aria-hidden="true"
@@ -1313,7 +1339,9 @@ function SolutionSection() {
                       transition={{ duration: 0.45, ease: 'easeOut' }}
                       className="overflow-hidden"
                     >
-                      <p className="mt-10 max-w-4xl text-base leading-8 text-white md:text-xl md:leading-9">
+                      <p className={`mt-10 max-w-4xl text-base leading-8 transition-colors duration-700 md:text-xl md:leading-9 ${
+                        isLightActive ? 'text-black/75' : 'text-white'
+                      }`}>
                         {item.text}
                       </p>
                     </motion.div>
@@ -1414,7 +1442,7 @@ function PricingCard({ index, plan }: { index: number; plan: PricingPlan }) {
             {plan.title}
           </span>
           {plan.featured ? (
-            <span className="rounded-full border border-white/20 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-black">
+            <span className="accent-badge rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em]">
               Most popular
             </span>
           ) : null}
@@ -1475,7 +1503,7 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
           <div>
             <h2 className="max-w-3xl text-5xl font-medium leading-[0.92] tracking-[-1px] md:text-8xl md:leading-[0.9] lg:text-9xl">
               Let&rsquo;s work
-              <span className="block font-serif italic">Together</span>
+              <span className="block">Together</span>
             </h2>
             <a
               href="mailto:hello@phaseonedigital.co"
@@ -1705,14 +1733,14 @@ function QuestionContactSection({
           {headingLayout === 'paired' ? (
             <div aria-hidden="true" className="mx-auto w-fit max-w-full space-y-2 text-left md:space-y-3">
               <ContactFlipPair lines={['HAVE A', 'QUESTION?']} />
-              <ContactFlipPair lines={['BOOK A FREE', 'CALL.']} />
+              <ContactFlipPair className="font-melodrama-display font-normal" lines={['BOOK A FREE', 'CALL.']} />
             </div>
           ) : (
             <div aria-hidden="true" className="mx-auto w-fit max-w-full space-y-2 text-left md:space-y-3">
               <FlipRevealWord>HAVE A</FlipRevealWord>
               <FlipRevealWord>QUESTION?</FlipRevealWord>
-              <FlipRevealWord>BOOK A FREE</FlipRevealWord>
-              <FlipRevealWord>CALL.</FlipRevealWord>
+              <FlipRevealWord className="font-melodrama-display font-normal">BOOK A FREE</FlipRevealWord>
+              <FlipRevealWord className="font-melodrama-display font-normal">CALL.</FlipRevealWord>
             </div>
           )}
 
@@ -1786,7 +1814,7 @@ function WorksPage() {
               {...fadeUp(0.08 + index * 0.06)}
               className={`group/work-pill absolute block w-[88vw] max-w-[770px] text-black transition duration-500 hover:scale-[1.03] md:w-[770px] ${work.className}`}
             >
-              <span className="relative block h-64 overflow-hidden rounded-full border border-black/20 bg-white md:h-[480px]">
+              <span className="accent-work-media relative block h-64 overflow-hidden rounded-full border border-black/20 bg-white md:h-[480px]">
                 <img
                   src={work.image}
                   alt=""
@@ -1805,7 +1833,7 @@ function WorksPage() {
                 <span className="block whitespace-nowrap text-xl font-medium uppercase tracking-[-0.02em] md:text-3xl">
                   {work.title}
                 </span>
-                <span className="mt-2 block text-xs uppercase tracking-[2px] text-black/55">
+                <span className="accent-text mt-2.5 block text-sm font-medium uppercase tracking-[2.5px] md:text-base">
                   {work.type}
                 </span>
               </span>
@@ -1898,16 +1926,16 @@ function AboutPage() {
       <section className="bg-white px-6 pb-[26rem] pt-12 text-black md:px-12 md:pb-[46rem] md:pt-24">
         <div ref={aboutRef} className="mx-auto max-w-[92rem]">
           <p className="sr-only">
-            We design, optimize, and market your brand online.
+            We design, optimize and market your brand online.
           </p>
           <div aria-hidden="true" className="mx-auto w-fit max-w-full space-y-2 overflow-visible px-[0.08em] text-left md:space-y-3">
             <AboutFlipRevealWord x={firstX}>WE DESIGN</AboutFlipRevealWord>
-            <AboutFlipRevealWord x={secondX}>WE OPTIMIZE</AboutFlipRevealWord>
-            <AboutFlipRevealWord x={thirdX}>WE MARKET</AboutFlipRevealWord>
+            <AboutFlipRevealWord x={secondX}><span className="accent-word">OPTIMIZE</span> &amp;</AboutFlipRevealWord>
+            <AboutFlipRevealWord x={thirdX}>MARKET</AboutFlipRevealWord>
             <AboutFlipRevealPair
               rows={[
-                { text: 'YOUR BRAND', x: fourthX },
-                { text: 'ONLINE', x: fifthX },
+                { text: 'YOUR BRAND', x: fourthX, className: 'font-melodrama-display font-normal' },
+                { text: 'ONLINE', x: fifthX, className: 'font-melodrama-display font-normal' },
               ]}
             />
           </div>
@@ -1917,7 +1945,7 @@ function AboutPage() {
             className="mt-20 text-left md:ml-[32vw] md:mt-28 md:max-w-[42rem]"
           >
             <div className="max-w-md">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-black/45">
+              <p className="accent-text text-xs font-semibold uppercase tracking-[0.22em]">
                 What We Solve
               </p>
               <h2 className="mt-5 max-w-md text-3xl font-medium leading-[1.05] tracking-[-0.04em] text-black md:text-5xl">
@@ -2093,19 +2121,55 @@ function App() {
   const isWorksPage = pathname === '/works'
   const isAboutPage = pathname === '/about'
   const isContactPage = pathname === '/contact'
+  const isHomePage = pathname === '/'
+  const [isHomeLightSectionActive, setIsHomeLightSectionActive] = useState(false)
   const { scrollYProgress: footerRevealProgress } = useScroll({
     target: pageContentRef,
     offset: ['end end', 'end start'],
   })
 
+  useEffect(() => {
+    if (!isHomePage) {
+      setIsHomeLightSectionActive(false)
+      return undefined
+    }
+
+    const updateHomeLightMode = () => {
+      const lightSection = document.querySelector<HTMLElement>('.mission-light-section')
+
+      if (!lightSection) {
+        setIsHomeLightSectionActive(false)
+        return
+      }
+
+      const rect = lightSection.getBoundingClientRect()
+      const entersView = rect.top <= window.innerHeight * 0.72
+      const hasNotPassed = rect.bottom > window.innerHeight * 0.34
+      setIsHomeLightSectionActive(entersView && hasNotPassed)
+    }
+
+    updateHomeLightMode()
+    window.addEventListener('scroll', updateHomeLightMode, { passive: true })
+    window.addEventListener('resize', updateHomeLightMode)
+
+    return () => {
+      window.removeEventListener('scroll', updateHomeLightMode)
+      window.removeEventListener('resize', updateHomeLightMode)
+    }
+  }, [isHomePage])
+
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className={`min-h-screen transition-colors duration-700 ${
+      isHomeLightSectionActive ? 'bg-white text-black' : 'bg-background text-foreground'
+    }`}>
       <SmoothScroll />
       <HashScroller />
       {/* Keep page content above the sticky footer until the footer reveal zone. */}
-      <div ref={pageContentRef} className="relative z-10 bg-background">
+      <div ref={pageContentRef} className={`relative z-10 transition-colors duration-700 ${
+        isHomeLightSectionActive ? 'bg-white' : 'bg-background'
+      }`}>
         <Navbar
-          isLightPage={isAboutPage || isWorksPage || isContactPage}
+          isLightPage={isAboutPage || isWorksPage || isContactPage || isHomeLightSectionActive}
           pathname={pathname}
         />
         {isWorksPage ? (
@@ -2117,9 +2181,9 @@ function App() {
         ) : (
           <>
             <HeroScrollScene />
-            <FeaturedWorkSection />
-            <MissionSection />
-            <SolutionSection />
+            <FeaturedWorkSection isLightActive={isHomeLightSectionActive} />
+            <MissionSection isLightActive={isHomeLightSectionActive} />
+            <SolutionSection isLightActive={isHomeLightSectionActive} />
             <ServicesSection />
             <CtaSection />
           </>

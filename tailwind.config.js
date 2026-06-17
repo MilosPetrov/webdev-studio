@@ -43,7 +43,6 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        serif: ['Instrument Serif', 'serif'],
       },
       borderRadius: {
         lg: 'var(--radius)',
