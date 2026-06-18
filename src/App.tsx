@@ -137,7 +137,7 @@ const workPills = [
     image: workItems[0].image,
     hoverImage:
       'https://images.pexels.com/photos/3184298/pexels-photo-3184298.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    className: 'left-[3%] top-[4%] md:left-[5%] md:top-[5%]',
+    className: 'left-[6vw] top-[9%] md:left-[5%] md:top-[5%]',
   },
   {
     title: 'Commerce Redesign',
@@ -145,7 +145,7 @@ const workPills = [
     image: workItems[1].image,
     hoverImage:
       'https://images.pexels.com/photos/5632402/pexels-photo-5632402.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    className: 'right-[3%] top-[26%] md:right-[5%] md:top-[24%]',
+    className: 'left-[6vw] top-[31%] md:left-auto md:right-[5%] md:top-[24%]',
   },
   {
     title: 'Startup Launch',
@@ -153,7 +153,7 @@ const workPills = [
     image: workItems[2].image,
     hoverImage:
       'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    className: 'left-[4%] top-[52%] md:left-[9%] md:top-[50%]',
+    className: 'left-[6vw] top-[56%] md:left-[9%] md:top-[50%]',
   },
   {
     title: 'Product System',
@@ -161,7 +161,7 @@ const workPills = [
     image: workItems[3].image,
     hoverImage:
       'https://images.pexels.com/photos/6476589/pexels-photo-6476589.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    className: 'right-[3%] top-[78%] md:right-[7%] md:top-[75%]',
+    className: 'left-[6vw] top-[82%] md:left-auto md:right-[7%] md:top-[75%]',
   },
 ]
 
@@ -766,12 +766,12 @@ function ContactFlipPair({ className = '', lines }: { className?: string; lines:
         margin: '0px 0px -8% 0px',
         once: true,
       }}
-      className="space-y-2 md:space-y-3"
+      className="space-y-1.5 md:space-y-3"
     >
       {lines.map((line) => (
         <span
           key={line}
-          className={`block perspective-[1400px] whitespace-nowrap text-left text-[clamp(2.8rem,13vw,3.25rem)] font-medium uppercase leading-[0.95] tracking-[-0.035em] text-white md:text-[clamp(4rem,12vw,200px)] md:leading-[0.88] md:tracking-[-0.075em] ${className}`}
+          className={`block perspective-[1400px] whitespace-nowrap text-left text-[clamp(3.35rem,15.5vw,4.15rem)] font-medium uppercase leading-[0.86] tracking-[-0.055em] text-white md:text-[clamp(4rem,12vw,200px)] md:leading-[0.88] md:tracking-[-0.075em] ${className}`}
           style={{
             perspective: 1400,
             perspectiveOrigin: '50% 60%',
@@ -815,7 +815,7 @@ function AboutFlipRevealWord({
 }) {
   return (
     <TiltFlipRevealLine
-      className={`whitespace-nowrap py-[0.04em] text-left text-[clamp(3rem,13vw,6rem)] font-medium uppercase leading-[1] tracking-[-0.035em] text-black md:text-[200px] md:leading-[0.95] md:tracking-[-0.075em] ${className ?? ''}`}
+      className={`whitespace-nowrap py-[0.02em] text-left text-[clamp(3.9rem,18vw,5.2rem)] font-medium uppercase leading-[0.82] tracking-[-0.065em] text-black md:text-[200px] md:leading-[0.95] md:tracking-[-0.075em] ${className ?? ''}`}
       x={x}
     >
       {children}
@@ -833,12 +833,12 @@ function AboutFlipRevealPair({
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, amount: 0.82, margin: '0px 0px -8% 0px' }}
-      className="space-y-2 md:space-y-3"
+      className="space-y-1 md:space-y-3"
     >
       {rows.map((row) => (
         <motion.span
           key={row.text}
-          className={`block perspective-[1400px] whitespace-nowrap py-[0.04em] text-left text-[clamp(3rem,13vw,6rem)] font-medium uppercase leading-[1] tracking-[-0.035em] text-black md:text-[200px] md:leading-[0.95] md:tracking-[-0.075em] ${row.className ?? ''}`}
+          className={`block perspective-[1400px] whitespace-nowrap py-[0.02em] text-left text-[clamp(3.9rem,18vw,5.2rem)] font-medium uppercase leading-[0.82] tracking-[-0.065em] text-black md:text-[200px] md:leading-[0.95] md:tracking-[-0.075em] ${row.className ?? ''}`}
           style={{
             perspective: 1400,
             perspectiveOrigin: '50% 60%',
@@ -888,7 +888,7 @@ function UnderlineField({
   type?: 'email' | 'text'
 }) {
   const inputClassName =
-    'block w-full border-0 border-b border-white/35 bg-transparent px-0 text-center text-base text-white outline-none transition placeholder:text-white/45 focus:border-white/35 md:text-left'
+    'block w-full border-0 border-b border-white/35 bg-transparent px-0 text-left text-base text-white outline-none transition placeholder:text-white/45 focus:border-white/35'
 
   return (
     <div className={`group/field relative ${className}`}>
@@ -924,7 +924,7 @@ function CoverStatementSection() {
     target: statementRef,
     offset: ['start 78%', 'end 22%'],
   })
-  const mobileStatementOffsets = { business: -34, elevated: 4, growFast: -58, standOut: 56, your: 34 }
+  const mobileStatementOffsets = { business: -18, elevated: 3, growFast: -30, standOut: 30, your: 18 }
   const desktopStatementOffsets = { business: -92, elevated: 10, growFast: -140, standOut: 132, your: 88 }
   const statementOffsets = isDesktop ? desktopStatementOffsets : mobileStatementOffsets
   const yourX = useTransform(scrollYProgress, [0, 1], [0, statementOffsets.your])
@@ -953,7 +953,7 @@ function CoverStatementSection() {
           <FlipRevealWord x={yourX} className="statement-display-row">YOUR</FlipRevealWord>
           <FlipRevealWord x={businessX} className="statement-display-row md:pl-[3vw]">BUSINESS</FlipRevealWord>
           <FlipRevealWord x={elevatedX} className="statement-display-row font-melodrama-display font-normal md:-ml-[2vw]">ELEVATED</FlipRevealWord>
-          <FlipRevealWord x={standOutX} className="statement-display-row pt-16 md:pt-32">STAND OUT</FlipRevealWord>
+          <FlipRevealWord x={standOutX} className="statement-display-row -ml-5 pt-16 md:ml-0 md:pt-32">STAND OUT</FlipRevealWord>
           <FlipRevealWord x={growFastX} className="statement-display-row font-melodrama-display font-normal">GROW FAST</FlipRevealWord>
         </div>
       </div>
@@ -1025,7 +1025,7 @@ function FeaturedWorkSection({ isLightActive = false }: { isLightActive?: boolea
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.5 }}
-          className="mx-auto max-w-6xl text-center text-[2rem] font-medium leading-[1.08] tracking-[-1px] md:text-6xl md:leading-[1.02] lg:text-7xl"
+          className="mx-auto max-w-6xl text-center text-[2.55rem] font-medium leading-[0.98] tracking-[-0.045em] md:text-6xl md:leading-[1.02] md:tracking-[-1px] lg:text-7xl"
         >
           <span className="md:hidden">We&apos;re a digital-first design agency where creativity meets technology.</span>
           <span className="hidden md:inline">
@@ -1042,34 +1042,65 @@ function FeaturedWorkSection({ isLightActive = false }: { isLightActive?: boolea
           Recent Work
         </motion.p>
 
-        <div className="work-grid mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="work-grid mt-4 grid gap-x-3 gap-y-9 sm:grid-cols-2 sm:gap-y-6 lg:grid-cols-4">
           {workItems.map((work, index) => (
-            <motion.a
+            <RecentWorkCard
               key={work.title}
-              href="#work"
-              {...fadeUp(index * 0.1)}
-              className="work-card group block transition duration-300"
-              aria-label={`${work.title} project placeholder`}
-            >
-              <div className="accent-work-media relative aspect-square overflow-hidden rounded-2xl bg-card md:rounded-3xl">
-                <img
-                  src={work.image}
-                  alt=""
-                  className="h-full w-full scale-105 object-cover transition duration-500 md:group-hover:scale-100"
-                  loading="lazy"
-                />
-              </div>
-              <h3 className={`mt-4 text-base font-semibold transition-colors duration-700 md:text-lg ${
-                isLightActive ? 'text-black' : 'text-white'
-              }`}>{work.title}</h3>
-              <p className={`mt-1 text-xs uppercase tracking-[2px] transition-colors duration-700 ${
-                isLightActive ? 'text-black/55' : 'accent-text opacity-80'
-              }`}>{work.type}</p>
-            </motion.a>
+              index={index}
+              isLightActive={isLightActive}
+              work={work}
+            />
           ))}
         </div>
       </div>
     </section>
+  )
+}
+
+function RecentWorkCard({
+  index,
+  isLightActive,
+  work,
+}: {
+  index: number
+  isLightActive: boolean
+  work: (typeof workItems)[number]
+}) {
+  const [isImageLoaded, setIsImageLoaded] = useState(false)
+
+  return (
+    <a
+      href="#work"
+      className="work-card group block transition duration-300"
+      aria-label={`${work.title} project placeholder`}
+    >
+      <div className="accent-work-media relative aspect-square overflow-hidden rounded-2xl bg-transparent md:rounded-3xl">
+        <img
+          src={work.image}
+          alt=""
+          className={`h-full w-full scale-105 object-cover opacity-0 transition-[opacity,transform] duration-500 ease-out md:group-hover:scale-100 ${
+            isImageLoaded ? 'opacity-100' : ''
+          }`}
+          style={{ transitionDelay: isImageLoaded ? `${index * 80}ms` : '0ms' }}
+          decoding="async"
+          loading="eager"
+          onError={() => setIsImageLoaded(true)}
+          onLoad={(event) => {
+            const image = event.currentTarget
+            void image.decode().then(
+              () => setIsImageLoaded(true),
+              () => setIsImageLoaded(true),
+            )
+          }}
+        />
+      </div>
+      <h3 className={`mt-3 text-base font-semibold transition-colors duration-700 md:mt-4 md:text-lg ${
+        isLightActive ? 'text-black' : 'text-white'
+      }`}>{work.title}</h3>
+      <p className={`mt-1 text-xs uppercase tracking-[2px] transition-colors duration-700 ${
+        isLightActive ? 'text-black/55' : 'accent-text opacity-80'
+      }`}>{work.type}</p>
+    </a>
   )
 }
 
@@ -1185,8 +1216,14 @@ function MissionSection({ isLightActive = false }: { isLightActive?: boolean }) 
     >
       <h2 className="sr-only">Shape A Better Future</h2>
       <motion.p
+        {...fadeUp(0.02)}
+        className="accent-text absolute left-6 top-20 z-10 text-left text-xs font-medium uppercase tracking-[2.5px] md:hidden"
+      >
+        Our Purpose
+      </motion.p>
+      <motion.p
         {...fadeUp(0.08)}
-        className={`relative z-10 max-w-[23rem] text-lg font-medium leading-8 tracking-[-0.01em] transition-colors duration-700 md:absolute md:left-12 md:top-16 md:max-w-[30rem] md:text-[1.35rem] md:leading-9 ${
+        className={`relative z-10 mt-[52svh] max-w-[23rem] text-lg font-medium leading-8 tracking-[-0.01em] transition-colors duration-700 md:absolute md:left-12 md:top-16 md:mt-0 md:max-w-[30rem] md:text-[1.35rem] md:leading-9 ${
           isLightActive ? 'text-black/85' : 'text-white/85'
         }`}
       >
@@ -1196,7 +1233,7 @@ function MissionSection({ isLightActive = false }: { isLightActive?: boolean }) 
       </motion.p>
       <motion.div
         {...fadeUp(0.18)}
-        className="relative z-10 mt-[58svh] max-w-[24rem] md:absolute md:left-12 md:top-[61%] md:mt-0 md:max-w-[34rem]"
+        className="relative z-10 mt-8 max-w-[24rem] md:absolute md:left-12 md:top-[61%] md:mt-0 md:max-w-[34rem]"
       >
         <p className={`text-lg font-medium leading-8 tracking-[-0.01em] transition-colors duration-700 md:text-[1.35rem] md:leading-9 ${
           isLightActive ? 'text-black/85' : 'text-white/85'
@@ -1224,25 +1261,25 @@ function MissionSection({ isLightActive = false }: { isLightActive?: boolean }) 
       </motion.div>
       <motion.div
         aria-hidden="true"
-        className={`absolute inset-0 transition-colors duration-700 ${
+        className={`absolute left-6 top-0 h-full w-[calc(100%_-_3rem)] max-w-[23rem] transition-colors duration-700 md:inset-0 md:h-auto md:w-auto md:max-w-none ${
           isLightActive ? 'text-neutral-400' : 'text-white'
         }`}
       >
         <AnimatedLetterLine
           delay={0}
-          className="absolute -right-8 top-[18%] text-right text-[7.6rem] font-medium leading-[0.78] tracking-normal md:right-[10vw] md:top-16 md:text-[clamp(9rem,31vw,25.625rem)]"
+          className="absolute right-0 top-[18%] text-right text-[6.95rem] font-light leading-[0.78] tracking-[-0.085em] md:right-[10vw] md:top-16 md:text-[clamp(9rem,31vw,25.625rem)] md:font-medium md:tracking-normal"
         >
           Shape
         </AnimatedLetterLine>
         <AnimatedLetterLine
           delay={0}
-          className="absolute left-6 top-[44%] -translate-y-1/2 text-left text-[4.55rem] font-semibold leading-[0.88] tracking-normal md:left-12 md:top-[40%] md:text-[clamp(5rem,18vw,16rem)] md:leading-[0.85]"
+          className="absolute left-0 top-[29.75%] -translate-y-1/2 text-left text-[5.15rem] font-light leading-[0.88] tracking-[-0.075em] md:left-12 md:top-[40%] md:text-[clamp(5rem,18vw,16rem)] md:font-semibold md:leading-[0.85] md:tracking-normal"
         >
           A better
         </AnimatedLetterLine>
         <AnimatedLetterLine
           delay={0}
-          className="font-melodrama-display absolute -right-8 top-[63%] -translate-y-1/2 text-right text-[7.6rem] font-normal leading-[0.78] tracking-normal md:right-[7vw] md:top-[68%] md:text-[clamp(9rem,30vw,25rem)]"
+          className="purpose-future-word font-melodrama-display absolute right-0 top-[37.2%] -translate-y-1/2 text-right text-[6.95rem] font-normal leading-[0.78] tracking-[-0.11em] md:right-[7vw] md:top-[68%] md:text-[clamp(9rem,30vw,25rem)] md:tracking-normal"
         >
           Future.
         </AnimatedLetterLine>
@@ -1517,9 +1554,9 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
     >
       <motion.div
         style={{ opacity: footerContentOpacity, y: footerContentY }}
-        className="mx-auto flex min-h-[calc(100svh-8.5rem)] w-full max-w-6xl flex-col justify-center md:min-h-[calc(100svh-11rem)] md:justify-between"
+        className="mx-auto flex min-h-[calc(100svh-8.5rem)] w-full max-w-6xl translate-y-5 flex-col justify-center md:min-h-[calc(100svh-11rem)] md:translate-y-0 md:justify-between"
       >
-        <div className="grid gap-10 md:gap-16 md:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] md:items-end">
+        <div className="grid gap-8 md:gap-16 md:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] md:items-end">
           <div>
             <h2 className="max-w-3xl text-[4rem] font-medium leading-[0.9] tracking-[-1px] md:text-8xl md:leading-[0.9] lg:text-9xl">
               Let&rsquo;s work
@@ -1527,7 +1564,7 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
             </h2>
             <a
               href="mailto:hello@phaseonedigital.co"
-              className="circle-reveal group/footer-contact mt-10 inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/40 bg-black px-6 text-sm font-semibold text-white transition duration-300"
+              className="circle-reveal group/footer-contact mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/40 bg-black px-6 text-sm font-semibold text-white transition duration-300 md:mt-10"
             >
               <span>Get in touch</span>
               <span className="relative inline-flex h-4 w-4 items-center justify-center overflow-hidden">
@@ -1536,7 +1573,7 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
               </span>
             </a>
 
-            <div className="mt-10 space-y-3 text-lg text-foreground md:mt-16 md:text-xl">
+            <div className="mt-8 space-y-2.5 text-lg text-foreground md:mt-16 md:space-y-3 md:text-xl">
               <a href="mailto:hello@phaseonedigital.co" className="group/contact relative block w-fit">
                 hello@phaseonedigital.co
                 <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 md:group-hover/contact:scale-x-100" />
@@ -1547,7 +1584,7 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
               </a>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-3 md:mt-8">
               {socialLinks.map((social) => {
                 const Icon = social.icon
 
@@ -1568,7 +1605,7 @@ function Footer({ revealProgress }: { revealProgress: MotionValue<number> }) {
               })}
             </div>
 
-            <div className="mt-7 text-foreground md:mt-8">
+            <div className="mt-6 text-foreground md:mt-8">
               <PhaseOneLogo footer />
             </div>
           </div>
@@ -1775,7 +1812,7 @@ function QuestionContactSection({
               type="submit"
               className="circle-reveal group/send-message mx-auto inline-flex h-14 w-fit items-center justify-center gap-2 rounded-full border border-white/40 bg-black px-8 text-sm font-semibold uppercase tracking-[0.08em] text-white transition duration-300 md:col-span-2"
             >
-              <span>Send Message</span>
+              <span>SEND</span>
               <span className="relative inline-flex h-4 w-4 items-center justify-center overflow-hidden">
                 <ArrowRight className="h-4 w-4 transition duration-200 md:group-hover/send-message:translate-x-5 md:group-hover/send-message:opacity-0" aria-hidden="true" />
                 <ArrowRight className="absolute h-4 w-4 -translate-x-5 text-background opacity-0 transition duration-200 md:group-hover/send-message:translate-x-0 md:group-hover/send-message:opacity-100" aria-hidden="true" />
@@ -1799,7 +1836,7 @@ function WorksPage() {
   useMorphingContactDome()
 
   return (
-    <div ref={worksRef} className="relative h-[550svh] bg-background">
+    <div ref={worksRef} className="relative h-[505svh] bg-background md:h-[550svh]">
       <section className="sticky top-0 z-0 h-screen overflow-hidden bg-white px-6 pt-24 text-black md:px-12 md:pt-32">
         <div className="pointer-events-none absolute inset-x-0 top-[16svh] z-0 flex justify-center px-6 text-center">
           <motion.h1
@@ -1816,22 +1853,22 @@ function WorksPage() {
               key={work.title}
               href="#works-contact"
               {...fadeUp(0.08 + index * 0.06)}
-              className={`group/work-pill absolute block w-[88vw] max-w-[770px] text-black transition duration-500 hover:scale-[1.03] md:w-[770px] ${work.className}`}
+              className={`group/work-pill absolute block w-[88vw] max-w-[770px] text-black md:w-[770px] ${work.className}`}
             >
-              <span className="accent-work-media relative block h-64 overflow-hidden rounded-full border border-black/20 bg-white md:h-[480px]">
+              <span className="accent-work-media relative block h-64 overflow-hidden rounded-full border border-accent bg-white md:h-[480px]">
                 <img
                   src={work.image}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover/work-pill:scale-105"
+                  className="absolute inset-0 h-full w-full object-cover"
                   loading={index === 0 ? 'eager' : 'lazy'}
                 />
                 <img
                   src={work.hoverImage}
                   alt=""
-                  className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition duration-700 group-hover/work-pill:scale-100 group-hover/work-pill:opacity-100"
+                  className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0"
                   loading="lazy"
                 />
-                <span className="absolute inset-0 bg-black/18 transition duration-500 group-hover/work-pill:bg-black/8" />
+                <span className="absolute inset-0 bg-black/18" />
               </span>
               <span className="mt-5 block px-2 text-center md:mt-6 md:px-4">
                 <span className="block whitespace-nowrap text-xl font-medium uppercase tracking-[-0.02em] md:text-3xl">
@@ -1846,12 +1883,12 @@ function WorksPage() {
         </motion.div>
       </section>
 
-      <div className="absolute inset-x-0 bottom-0 top-[450svh] z-10 bg-background" aria-hidden="true" />
+      <div className="absolute inset-x-0 bottom-0 top-[405svh] z-10 bg-background md:top-[450svh]" aria-hidden="true" />
 
-      <div className="absolute inset-x-0 top-[450svh] z-20">
+      <div className="absolute inset-x-0 top-[405svh] z-20 md:top-[450svh]">
         <QuestionContactSection
           id="works-contact"
-          contentClassName="-mt-16 md:-mt-72"
+          contentClassName="-mt-24 md:-mt-72"
           coverClassName="about-contact-cover"
           headingLayout="paired"
           sectionClassName="!min-h-0 justify-start !py-0 pb-0 md:!min-h-0 md:!py-0 md:pb-0"
@@ -1870,7 +1907,7 @@ function AboutPage() {
   })
   const offsets = isDesktop
     ? { first: 92, fourth: -88, second: 14, fifth: -138, third: 122 }
-    : { first: 34, fourth: -34, second: 6, fifth: -54, third: 46 }
+    : { first: 18, fourth: -18, second: 4, fifth: -26, third: 24 }
   const firstX = useTransform(scrollYProgress, [0, 1], [0, offsets.first])
   const secondX = useTransform(scrollYProgress, [0, 1], [0, offsets.second])
   const thirdX = useTransform(scrollYProgress, [0, 1], [0, offsets.third])
@@ -1935,7 +1972,7 @@ function AboutPage() {
           <p className="sr-only">
             We design, optimize and market your brand online.
           </p>
-          <div aria-hidden="true" className="mx-auto w-fit max-w-full space-y-2 overflow-visible px-[0.08em] text-left md:space-y-3">
+          <div aria-hidden="true" className="-ml-4 w-fit max-w-full space-y-1 overflow-visible px-[0.08em] text-left md:mx-auto md:ml-auto md:space-y-3">
             <AboutFlipRevealWord x={firstX}>WE DESIGN</AboutFlipRevealWord>
             <AboutFlipRevealWord x={secondX}><span className="accent-word">OPTIMIZE</span> &amp;</AboutFlipRevealWord>
             <AboutFlipRevealWord x={thirdX}>MARKET</AboutFlipRevealWord>
@@ -1993,7 +2030,7 @@ function AboutPage() {
 
       <QuestionContactSection
         id="about-contact"
-        contentClassName="-mt-16 md:-mt-72"
+        contentClassName="-mt-24 md:-mt-72"
         coverClassName="about-contact-cover"
         headingLayout="paired"
         sectionClassName="!min-h-0 justify-start !py-0 pb-0 md:!min-h-0 md:!py-0 md:pb-0"
@@ -2009,7 +2046,7 @@ function ContactPage() {
         <div className="flex min-h-[58svh] items-center justify-center px-6 pb-16 pt-28 text-center md:px-12 md:pt-32">
           <motion.h1
             {...fadeUp(0)}
-            className="text-[clamp(4.8rem,18vw,18rem)] font-medium uppercase leading-[0.78] tracking-[-0.075em]"
+            className="text-[clamp(4.8rem,18vw,18rem)] font-medium uppercase leading-[0.78] tracking-[-0.040em]"
           >
             CONTACT
           </motion.h1>
@@ -2053,7 +2090,7 @@ function ContactPage() {
                 type="submit"
                 className="circle-reveal group/contact-send mx-auto inline-flex h-14 w-fit items-center justify-center gap-2 rounded-full border border-white/40 bg-black px-8 text-sm font-semibold uppercase tracking-[0.08em] text-white transition duration-300 md:col-span-2"
               >
-                <span>Send Message</span>
+                <span>SEND</span>
                 <span className="relative inline-flex h-4 w-4 items-center justify-center overflow-hidden">
                   <ArrowRight className="h-4 w-4 transition duration-200 md:group-hover/contact-send:translate-x-5 md:group-hover/contact-send:opacity-0" aria-hidden="true" />
                   <ArrowRight className="absolute h-4 w-4 -translate-x-5 text-background opacity-0 transition duration-200 md:group-hover/contact-send:translate-x-0 md:group-hover/contact-send:opacity-100" aria-hidden="true" />

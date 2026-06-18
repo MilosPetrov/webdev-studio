@@ -126,6 +126,18 @@
     .hero-text-mobile .hero-text-tight * {
       letter-spacing: -0.065em !important;
     }
+
+    .statement-display-row {
+      font-size: clamp(3.85rem, 17.8vw, 5.2rem) !important;
+      line-height: 0.84 !important;
+      letter-spacing: -0.06em !important;
+    }
+
+    .purpose-future-word,
+    .purpose-future-word * {
+      font-weight: 400 !important;
+      letter-spacing: -0.075em !important;
+    }
   }
 
   @media (min-width: 768px) {
@@ -241,9 +253,9 @@
     }
 
     .contact-hero-dome::before {
-      top: calc(clamp(35px, 9vw, 60px) * -1);
-      width: 190vw;
-      height: clamp(310px, 78vw, 460px);
+      top: calc(clamp(44px, 11vw, 72px) * -1);
+      width: 280vw;
+      height: clamp(380px, 96vw, 560px);
       border-radius: 50% 50% 0 0 / 100% 100% 0 0;
     }
   }
