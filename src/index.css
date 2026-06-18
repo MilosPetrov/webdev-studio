@@ -279,6 +279,10 @@
     transition: border-color 0.5s ease, transform 0.5s ease;
   }
 
+  .accent-arrow-active {
+    color: hsl(var(--accent)) !important;
+  }
+
   @media (min-width: 768px) {
     .about-contact-cover {
       min-height: 0 !important;

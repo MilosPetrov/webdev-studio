@@ -39,8 +39,8 @@ const playMutedVideo = (video: HTMLVideoElement) => {
 }
 
 const navLinks = [
-  { label: 'About', href: '/about' },
   { label: 'Works', href: '/works' },
+  { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ]
 
@@ -1365,20 +1365,20 @@ function SolutionSection({ isLightActive = false }: { isLightActive?: boolean })
               >
                 <button
                   type="button"
-                  className="accent-arrow-group group grid w-full grid-cols-[minmax(0,1fr)_96px] items-center gap-6 text-left md:grid-cols-[minmax(0,1fr)_190px] md:gap-8"
+                  className="accent-arrow-group group grid w-full grid-cols-[minmax(0,1fr)_80px] items-center gap-3 text-left md:grid-cols-[minmax(0,1fr)_190px] md:gap-8"
                   aria-expanded={isOpen}
                   onClick={() => setActiveAccordionItem((activeItem) => (activeItem === item.id ? null : item.id))}
                 >
-                  <span className={`text-5xl uppercase leading-none tracking-[-0.04em] transition-colors duration-700 md:text-[4.7rem] ${
+                  <span className={`min-w-0 text-[clamp(2.25rem,11vw,3rem)] uppercase leading-none tracking-[-0.04em] transition-colors duration-700 md:text-[4.7rem] ${
                     isLightActive ? 'text-black' : 'text-white'
                   }`}>
                     {item.title}
                   </span>
                   <span
-                    className={`accent-arrow-target flex h-24 w-32 items-center justify-center justify-self-end transition duration-500 md:h-40 md:w-52 ${
+                    className={`accent-arrow-target flex h-16 w-16 items-center justify-center justify-self-center transition duration-500 md:h-40 md:w-52 md:justify-self-end ${
                       isLightActive ? 'text-black' : 'text-white'
                     } ${
-                      isOpen ? 'rotate-45' : '-rotate-45'
+                      isOpen ? 'accent-arrow-active rotate-45' : '-rotate-45'
                     }`}
                     aria-hidden="true"
                   >
